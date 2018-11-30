@@ -1,0 +1,19 @@
+#--- forms.txt --------------------------------------------------------------#
+#
+# iam database form information
+#
+# format: a01-000u 000 2 prt 7 5 52 36
+#
+#     a01-000u  -> form id
+#     000       -> writer id
+#     2         -> number of sentences
+#     prt       -> word segmentation
+#                     prt: some lines correctly segmented
+#                     all: all lines correctly segmented
+#     7 5       -> 5 of 7 lines are correctly segmented into words
+#     52 36     -> the form contains 52 words, 36 are in lines which
+#                  have been correctly segmented
+#
+a01-000u 000 2 prt 7 5 52 36
+a01-000x 001 2 all 6 6 52 52
+a01-003 002 3 prt 11 10 81 71
