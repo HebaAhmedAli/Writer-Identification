@@ -38,10 +38,12 @@ class dataSet:
                     image= cv2.imread('data/'+data[0]+'.png')
                     processedImage=preprocessing.processImage(image)
                     dataSet.writersWithCorrespondingImages[int(data[1])].append(processedImage)
+                    # TODO: Delete after testing.
                     if i==0:
                         dataSet.show(image)
                         dataSet.show(processedImage)
                         i+=1
+                    ############################.
         dataSet.splitBetweenTrainingAndTesting()
         print("finishing data load and split it between training = "+str(dataSet.trainingSize)+" and testing = "+str(dataSet.testingSize))
         return  
