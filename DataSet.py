@@ -71,7 +71,7 @@ class dataSet:
         # Figure size in inches
         plt.figure(figsize=(10, 10))
         # Display an image on the axes, with nearest neighbour interpolation
-        plt.imshow(image, interpolation='nearest')
+        plt.imshow(image, interpolation='nearest',cmap="gray")
         return
 
 
