@@ -1,4 +1,4 @@
-import features.CO3 as co3
+from features.CO3 import co3 as co3
 import features.EdgeHinge as edgeHinge
 import features.ContorBasedOrientation as contorBasedOrientation
 import features.PolygonApproximation as polygonApproximation

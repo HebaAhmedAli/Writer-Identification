@@ -61,6 +61,7 @@ class dataSet:
                     dataSet.testingDataImages.append(image)
                     dataSet.testingDataWriters.append(i)
                     dataSet.writersWithCorrespondingImagesTesting[i].append(image)
+        dataSet.writersWithCorrespondingImages.clear()
         dataSet.trainingSize=len(dataSet.trainingDataImages)
         dataSet.testingSize=len(dataSet.testingDataImages)
         return

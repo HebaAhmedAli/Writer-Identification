@@ -10,10 +10,10 @@ start = time.time()
 dataSet.loadDataset()
 
 # TODO: Uncomment after testing.
-"""
+
 # Extract the featureVectors for all the writers.
 featureVectors=featureExtraction.extractFeatures("co3",dataSet.trainingDataImages,dataSet.writersWithCorrespondingImagesTraining)
-print(featureVectors) # TODO: Delete after testing
+#print(featureVectors) # TODO: Delete after testing
 
 # Evaluate the performance on the training data.
 performanceEvaluation.evaluatePerformance(dataSet.writersWithCorrespondingImagesTesting,featureVectors)
@@ -21,9 +21,9 @@ performanceEvaluation.evaluatePerformance(dataSet.writersWithCorrespondingImages
 
 # Identify any writer.
 knnIdentification.identifyWriter("co3",featureVectors,1,3)
-"""
+
 ###############################.
 
 # Printing the time taken.
 end = time.time()
-print(end - start)
+print("Time taken to excute the code = "+str(end - start))

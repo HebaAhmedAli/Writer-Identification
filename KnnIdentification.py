@@ -47,7 +47,7 @@ def identifyWriter(method,featureVectors,k,imagesNum):
         if newDist < minDist:
             minDist=newDist
             nearestWriter=i
-    print("The nearest writer id = "+nearestWriter)
+    print("The nearest writer id = "+str(nearestWriter))
 
 
 
