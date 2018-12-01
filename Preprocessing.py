@@ -7,7 +7,7 @@ def processImage(image):
     blurred = cv2.GaussianBlur(image, value, 0)
     grayImage = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
     ret,binarized= cv2.threshold(grayImage,175,255,cv2.THRESH_BINARY)
-    croppedBinarized=binarized[740:3000,350:2400]
+    croppedBinarized=binarized[740:3000,350:2450]
     return croppedBinarized
 
 # It returns the cropped images after splitting.
@@ -92,7 +92,7 @@ def getHorizontalImageLines(processedImg,minHight):
     return horizontalImageLines
 
 
-def segmentCharactersUsingProjection(processedImg,threshOfConnectedPixels,minWidth,minHight,maxWidth):
+def segmentCharactersUsingProjection(processedImg,threshOfConnectedPixels,minWidth,minHight,maxWidth,normalizeContors):
     characterSegments=[]
     allContors=[]
     horizontalImageLines=getHorizontalImageLines(processedImg,minHight)
@@ -108,18 +108,18 @@ def segmentCharactersUsingProjection(processedImg,threshOfConnectedPixels,minWid
                 if end-start < minWidth:
                     continue
                 elif end-start > maxWidth:
-                    resegmentedSegments=resegmantation(horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end],minWidth,threshOfConnectedPixels+10,allContors)
+                    resegmentedSegments=resegmantation(horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end],minWidth,threshOfConnectedPixels+10,allContors,normalizeContors)
                     characterSegments+=resegmentedSegments
                     continue
                 characterSegments.append(horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end])
                 # TODO: Delete after test.
                 cv2.imwrite("toTestLines/C"+str(k)+"_"+str(i)+".png",horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end])
                 #########################.
-                getContorsAndDraw(horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end],k,i,allContors)
+                getContorsAndDraw(horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end],k,i,allContors,normalizeContors)
                 
     return characterSegments,allContors
 
-def resegmantation(processedImg,minWidth,threshOfConnectedPixels,allContors):
+def resegmantation(processedImg,minWidth,threshOfConnectedPixels,allContors,normalizeContors):
     resegmentedSegments=[]
     verticalHist=getVerticalBlackHistogram(processedImg)
     start=0
@@ -135,7 +135,7 @@ def resegmantation(processedImg,minWidth,threshOfConnectedPixels,allContors):
              # TODO: Delete after test.
             cv2.imwrite("toTestLines/CK"+str(i)+".png",processedImg[0:processedImg.shape[0],start:end])
             #########################
-            getContorsAndDraw(processedImg[0:processedImg.shape[0],start:end],-1,i,allContors)
+            getContorsAndDraw(processedImg[0:processedImg.shape[0],start:end],-1,i,allContors,normalizeContors)
     return resegmentedSegments
 
 
@@ -149,17 +149,21 @@ def printContorsLengths(allContors):
         maxLength=max(maxLength,len(allContors[j]))
     print("min contor length = "+str(minLength)+" and max = "+str(maxLength))
     
-# TODO: Subtract from mean and devide by width or height.
-def getContorsAndDraw(image,x,y,allContors):
+
+# Get all the contors of image in a form of arrays of tuples(x,y)
+# and ignore the contors with length <10
+def getContorsAndDraw(image,x,y,allContors,normalizeContors):
     _, contors, _ = cv2.findContours(image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     drawing = np.zeros([image.shape[0],image.shape[1],3],np.uint8)
     for j in range(len(contors)):
         if len(contors[j]) > 10:
-            allContors.append(contors[j])
             # TODO: Delete after testing.
             cv2.drawContours(drawing,contors, j, (0,255,0), 2)
             ############################.
-        #allContors+=contors         
+            if normalizeContors==True:
+                contors[j]=(contors[j]-np.mean(contors[j], axis=0))/[[image.shape[1],image.shape[0]]]
+            contorAsTuple=[(contors[j][i][0][0],contors[j][i][0][1]) for i in range(len(contors[j]))]
+            allContors.append(contorAsTuple)
         # TODO: Delete after test.
         cv2.imwrite("toTest/c"+str(y)+"_"+str(x)+".png",drawing)
         #########################.
