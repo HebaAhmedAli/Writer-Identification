@@ -59,8 +59,8 @@ def getHorizontalBlackHistogram(processedImg):
     processedImg=1-(processedImg/255)
     horizontalHist = np.sum(processedImg,axis=1).tolist()
     # TODO: Delete after test.
-    plt.plot(horizontalHist)
-    plt.show()
+    #plt.plot(horizontalHist)
+    #plt.show()
     #########################
     return horizontalHist
 
@@ -91,8 +91,8 @@ def getHorizontalImageLines(processedImg,minHight):
             #########################.
     return horizontalImageLines
 
-
-def segmentCharactersUsingProjection(processedImg,threshOfConnectedPixels,minWidth,minHight,maxWidth,normalizeContors):
+# Segment the image and return all the segmented images and all the contors in them.
+def segmentCharactersUsingProjection(processedImg,normalizeContors=False,threshOfConnectedPixels=3,minWidth=10,minHight=20,maxWidth=100):
     characterSegments=[]
     allContors=[]
     horizontalImageLines=getHorizontalImageLines(processedImg,minHight)
@@ -155,6 +155,7 @@ def printContorsLengths(allContors):
 def getContorsAndDraw(image,x,y,allContors,normalizeContors):
     _, contors, _ = cv2.findContours(255-image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     drawing = np.zeros([image.shape[0],image.shape[1],3],np.uint8)
+    #print(len(contors))
     for j in range(len(contors)):
         if (len(contors[j]) > 10):
             # TODO: Delete after testing.
