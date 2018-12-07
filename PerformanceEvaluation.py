@@ -5,7 +5,8 @@ def evaluatePerformance(method,testingImages,testingImagesWriters,featureVectors
     for i in range(len(testingImages)):
         correctWriterId=testingImagesWriters[i]
         nearestWriter=knnIdentification.identifyWriter(method,featureVectorsAfterTraining,tariningDataWriters,testingImages[i],classifiedCO3)
+        print("(Performance) This image belongs to writer = "+str(nearestWriter)+" , Correct = "+str(correctWriterId))
         if nearestWriter==correctWriterId:
             correctImages+=1
     print("The performance = "+str(correctImages/len(testingImages))+" ,")
-    print("As correcttly identified "+str(correctImages)+" out of "+str(len(testingImages))+" writers.")
+    print("As correcttly identified "+str(correctImages)+" out of "+str(len(testingImages))+" images.")

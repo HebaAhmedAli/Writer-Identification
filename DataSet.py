@@ -30,7 +30,7 @@ class dataSet:
     def loadDataset():
         # Make any needed preprocessing
         with open("meta/forms/forms.txt", "r") as file:
-            i=0
+            #i=0
             for line in file:
                 if line[0]!='#':
                     data=line.split()
@@ -38,10 +38,12 @@ class dataSet:
                     processedImage=preprocessing.processImage(image)
                     dataSet.writersWithCorrespondingImages[int(data[1])].append(processedImage)
                     # TODO: Delete after testing.
+                    """
                     if i==0:
                         dataSet.show(image)
                         dataSet.show(processedImage)
                         i+=1
+                    """
                     ############################.
         dataSet.splitBetweenTrainingAndTesting()
         print("finishing data load and split it between training = "+str(dataSet.trainingSize)+" and testing = "+str(dataSet.testingSize))

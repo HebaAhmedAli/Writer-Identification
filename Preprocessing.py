@@ -22,7 +22,7 @@ def splitImageIntoSmallImages(img,windowHight,windowWidth):
                 continue
             cropped_images.append(cropped_image)
             # TODO: Delete after testing.
-            cv2.imwrite("toTestWindow/"+str(y)+"_"+str(x)+".png",cropped_image)
+            #cv2.imwrite("toTestWindow/"+str(y)+"_"+str(x)+".png",cropped_image)
             ############################.
     return cropped_images
 
@@ -39,7 +39,7 @@ def splitImageIntoSmallImagesAndGetContors(img,windowHight,windowWidth):
             if returnBlackPixelsRatio(cropped_image) < 0.02:
                 continue
             # TODO: Delete after testing.
-            cv2.imwrite("toTestWindow/"+str(y)+"_"+str(x)+".png",cropped_image)
+            #cv2.imwrite("toTestWindow/"+str(y)+"_"+str(x)+".png",cropped_image)
             ############################.
             getContorsAndDraw(cropped_image,x,y,allContors)
     # TODO: Delete after testing.       
@@ -87,7 +87,7 @@ def getHorizontalImageLines(processedImg,minHight):
                 continue
             horizontalImageLines.append(processedImg[start:end,0:processedImg.shape[1]])
             # TODO: Delete after test.
-            cv2.imwrite("toTestLines/L"+str(i)+".png",processedImg[start:end,0:processedImg.shape[1]])
+            #cv2.imwrite("toTestLines/L"+str(i)+".png",processedImg[start:end,0:processedImg.shape[1]])
             #########################.
     return horizontalImageLines
 
@@ -113,7 +113,7 @@ def segmentCharactersUsingProjection(processedImg,normalizeContors=False,threshO
                     continue
                 characterSegments.append(horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end])
                 # TODO: Delete after test.
-                cv2.imwrite("toTestLines/C"+str(k)+"_"+str(i)+".png",horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end])
+                #cv2.imwrite("toTestLines/C"+str(k)+"_"+str(i)+".png",horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end])
                 #########################.
                 getContorsAndDraw(horizontalImageLines[k][0:horizontalImageLines[k].shape[0],start:end],k,i,allContors,normalizeContors)
                 
@@ -133,7 +133,7 @@ def resegmantation(processedImg,minWidth,threshOfConnectedPixels,allContors,norm
                 continue
             resegmentedSegments.append(processedImg[0:processedImg.shape[0],start:end])
              # TODO: Delete after test.
-            cv2.imwrite("toTestLines/CK"+str(i)+".png",processedImg[0:processedImg.shape[0],start:end])
+            #cv2.imwrite("toTestLines/CK"+str(i)+".png",processedImg[0:processedImg.shape[0],start:end])
             #########################
             getContorsAndDraw(processedImg[0:processedImg.shape[0],start:end],-1,i,allContors,normalizeContors)
     return resegmentedSegments
@@ -166,7 +166,7 @@ def getContorsAndDraw(image,x,y,allContors,normalizeContors=False):
             contorAsTuple=[(contors[j][i][0][0],contors[j][i][0][1]) for i in range(len(contors[j]))]
             allContors.append(contorAsTuple)
         # TODO: Delete after test.
-        cv2.imwrite("toTest/c"+str(y)+"_"+str(x)+".png",drawing)
+        #cv2.imwrite("toTest/c"+str(y)+"_"+str(x)+".png",drawing)
         #########################.
     
     

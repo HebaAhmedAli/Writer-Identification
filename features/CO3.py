@@ -10,7 +10,7 @@ import time
 
 class co3:
     
-    co3Size=500 # 33*33
+    co3Size=200 # 33*33
     contorSize=100
     epochs=500
     radiousS=co3Size # Not sure
@@ -56,7 +56,11 @@ class co3:
         allCO3,imagesCO3=co3.extractTheCO3AllImages(trainingDataImages)
         print("len of allCO3 "+str(len(allCO3)))
         # Run the kohenen self organizing map algorithm.
-        classifiedCO3=[[(random.uniform(-1, 1),random.uniform(-1, 1)) for j in range(co3.contorSize)] for i in range(co3.co3Size)]
+        classifiedCO3=[]
+        if constants.continueTrainning == True:
+            classifiedCO3=co3.readWeights()
+        else:
+            classifiedCO3=[[(random.uniform(-1, 1),random.uniform(-1, 1)) for j in range(co3.contorSize)] for i in range(co3.co3Size)]
         radious=co3.radiousS
         rate=co3.learningRateS
         for k in range(co3.epochs):
@@ -99,6 +103,7 @@ class co3:
         for i in range(len(trainingDataImages)):
             start = time.time()
             featureVectors[i]=co3.getFeatureVector(classifiedCO3,imagesCO3[i])
+            print("Time taken to excute the getFeatureVector = "+str(time.time() - start))
         print("Time taken to excute the featureVectors loop = "+str(time.time() - start2))
         return classifiedCO3,featureVectors
 
@@ -158,3 +163,23 @@ class co3:
             newContor.append(contor[random_indices[i]])
         newContor=sorted(newContor,key=lambda x: (x[0], x[1]))
         return newContor
+    
+    def printWeights(classifiedCO3):
+       file=open("weights.txt","w")
+       for i in range(co3.co3Size):
+           file.write("#"+str(i)+"\n")
+           for j in range(co3.contorSize):
+               file.write(str(classifiedCO3[i][j][0])+" "+str(classifiedCO3[i][j][1])+"\n")
+       file.close()
+       
+    def readWeights():
+        classifiedCO3=[[] for i in range(co3.co3Size)]
+        with open("weights.txt", "r") as file:
+            i=-1
+            for line in file:
+                if line[0]=='#':  
+                    i+=1
+                else:
+                    data=line.split()
+                    classifiedCO3[i].append((float(data[0]),float(data[1])))
+        return classifiedCO3

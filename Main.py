@@ -4,7 +4,7 @@ from features.CO3 import co3 as co3
 import PerformanceEvaluation as performanceEvaluation
 import KnnIdentification as knnIdentification
 import time
-
+import random
 
 start = time.time()
 # TODO: Uncomment after testing.
@@ -29,10 +29,12 @@ print("Time taken to evaluatePerformance = "+str(time.time() - sartEvaluatePerfo
 sartIdentifyWriter=time.time()
 writerImages=knnIdentification.readWriterImages(1)
 writerId=knnIdentification.identifyWriter("co3",featureVectors,dataSet.tariningDataWriters,writerImages[0],classifiedCO3)
-print("This image belongs to writer = "+str(writerId))
+print("(Identification) This image belongs to writer = "+str(writerId)+" , Correct = "+str(25))
 print("Time taken to identifyWriter = "+str(time.time() - sartIdentifyWriter))
 
 # Printing the time taken.
 print("Time taken to excute the code = "+str(time.time() - start))
 
+# Print the weights.
+co3.printWeights(classifiedCO3)
 

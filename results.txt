@@ -1,0 +1,48 @@
+epochs= 500 , co3Size=500
+1st Try:
+The performance = 0.7 , k=3
+As correcttly identified 7 out of 10 images. -> 10 writers each writer has 2 images one as train and one as test
+,This image belongs to writer = 13 -> correct = 13
+Time taken to excute the code = 3933.6483120918274 => 65 min
+Time taken to evaluatePerformance = 1716.845541715622 => 28 min , so without perf = 37 min.
+
+2nd Try:
+The performance = 0.47 , k=3
+As correcttly identified 8 out of 17 images. -> 15 writers 40 images training =23 and testing =17
+,This image belongs to writer = 0 -> correct = 0
+Time taken to excute the code = 7589.902338027954 => 126 min
+Time taken to evaluatePerformance = 3271.7312004566193 => 54 min   , so without perf = 72 min.
+
+3rd Try: starting with random weights. k=3
+The performance = 1.0 ,
+As correcttly identified 3 out of 3 images. -> 3 writers 9 images training =6 and testing =3
+,This image belongs to writer = 85 , Correct = 85
+Time taken to excute the code = 2025.9079592227936 => 33 min
+Time taken to evaluatePerformance = 407.28269958496094 => 7 min , so without perf = 26  min
+
+
+4th Try: as 3rd try, starting with 2nd Try weights. k=3
+The performance = 1.0 ,
+As correcttly identified 3 out of 3 images. -> 3 writers 9 images training =6 and testing =3
+,This image belongs to writer = 85 , Correct = 85
+Time taken to excute the code = 2108.9079592227936 => 
+Time taken to evaluatePerformance = 423.28269958496094 => 
+
+5th Try: random weights k=3
+The performance = 0.6666666666666666 ,
+As correcttly identified 2 out of 3 images.
+(Identification) This image belongs to writer = 19 , Correct = 25
+
+
+6th Try: as 5th Try with the weights 3rd Try k=3  
+The performance = 1.0 ,
+As correcttly identified 3 out of 3 images.    tany rna baz tany
+
+
+epochs= 500 , co3Size=500
+5th Try: random weights k=3
+The performance = 0.6666666666666666 ,
+As correcttly identified 2 out of 3 images.
+(Identification) This image belongs to writer = 19 , Correct = 25
+
+
