@@ -6,31 +6,31 @@ import features.HorizontalScan as horizontalScan
 import features.HMM as hmm
 
 # Extract the features for all writers during training or testing phase.
-def extractFeatures(method,trainingDataImages,writersWithCorrespondingImages):
+def extractFeatures(method,trainingDataImages):
     if method=="co3":
-        return co3.getFeatureVectors(trainingDataImages,writersWithCorrespondingImages)
+        return co3.getFeatureVectors(trainingDataImages)
     elif method=="edgeHinge":
-        return edgeHinge.getFeatureVectors(writersWithCorrespondingImages)
+        return edgeHinge.getFeatureVectors(trainingDataImages)
     elif method=="contorBasedOrientation":
-        return contorBasedOrientation.getFeatureVectors(writersWithCorrespondingImages)
+        return contorBasedOrientation.getFeatureVectors(trainingDataImages)
     elif method=="polygonApproximation":
-        return polygonApproximation.getFeatureVectors(writersWithCorrespondingImages)
+        return polygonApproximation.getFeatureVectors(trainingDataImages)
     elif method=="horizontalScan":
-        return horizontalScan.getFeatureVectors(writersWithCorrespondingImages)
+        return horizontalScan.getFeatureVectors(trainingDataImages)
     elif method=="hmm":
-        return hmm.getFeatureVectors(writersWithCorrespondingImages)
+        return hmm.getFeatureVectors(trainingDataImages)
 
 # Extract the features for one writer during identification phase.
-def extractFeaturesDuringIdentification(method,writerImages):
+def extractFeaturesDuringIdentification(method,writerImage,classifiedCO3=[]):
     if method=="co3":
-        return co3.getFeatureVector(writerImages)
+        return co3.getFeatureVector(classifiedCO3,[],False,writerImage)
     elif method=="edgeHinge":
-        return edgeHinge.getFeatureVector(writerImages)
+        return edgeHinge.getFeatureVector(writerImage)
     elif method=="contorBasedOrientation":
-        return contorBasedOrientation.getFeatureVector(writerImages)
+        return contorBasedOrientation.getFeatureVector(writerImage)
     elif method=="polygonApproximation":
-        return polygonApproximation.getFeatureVector(writerImages)
+        return polygonApproximation.getFeatureVector(writerImage)
     elif method=="horizontalScan":
-        return horizontalScan.getFeatureVector(writerImages)
+        return horizontalScan.getFeatureVector(writerImage)
     elif method=="hmm":
-        return hmm.getFeatureVector(writerImages)
+        return hmm.getFeatureVector(writerImage)

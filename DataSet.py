@@ -1,13 +1,12 @@
 import Preprocessing as preprocessing
 from matplotlib import pyplot as plt
+import constants
 import cv2
 
 class dataSet:
     dataSize=1539
-    trainingSize=800
-    testingSize=739
-    # We have only 657 writers but the biggest id = 671.
-    writersIdSize=671 
+    trainingSize=0
+    testingSize=0
     # Contains all the processed training images.
     trainingDataImages=[]
     # Contains all the corresponding training writers.
@@ -18,14 +17,14 @@ class dataSet:
     testingDataWriters=[]
     # The index coressponding to writer id 
     # and contains all the processed images writen by this writer in the training data.
-    writersWithCorrespondingImagesTraining=[[] for i in range(671)] 
+    #writersWithCorrespondingImagesTraining=[[] for i in range(constants.writersIdSize)] 
     # The index coressponding to writer id 
     # and contains all the processed images writen by this writer in the testing data.
-    writersWithCorrespondingImagesTesting=[[] for i in range(671)] 
+    #writersWithCorrespondingImagesTesting=[[] for i in range(constants.writersIdSize)] 
     
     # The index coressponding to writer id 
     # and contains all the processed images writen by this writer in all data to be used while reading.
-    writersWithCorrespondingImages=[[] for i in range(671)] 
+    writersWithCorrespondingImages=[[] for i in range(constants.writersIdSize)] 
     
       
     def loadDataset():
@@ -49,18 +48,18 @@ class dataSet:
         return  
  
     def splitBetweenTrainingAndTesting():
-        for i in range(dataSet.writersIdSize):
-            splitingIndex=len(dataSet.writersWithCorrespondingImages[i])/2
+        for i in range(constants.writersIdSize):
+            splitingIndex=len(dataSet.writersWithCorrespondingImages[i])/2 # TODO: TO change the ratio.
             for j in range(len(dataSet.writersWithCorrespondingImages[i])):
                 image=dataSet.writersWithCorrespondingImages[i][j]
-                if j<splitingIndex:
+                if j<splitingIndex or constants.dontSplit:
                     dataSet.trainingDataImages.append(image)
                     dataSet.tariningDataWriters.append(i)
-                    dataSet.writersWithCorrespondingImagesTraining[i].append(image)
+                    #dataSet.writersWithCorrespondingImagesTraining[i].append(image)
                 else:
                     dataSet.testingDataImages.append(image)
                     dataSet.testingDataWriters.append(i)
-                    dataSet.writersWithCorrespondingImagesTesting[i].append(image)
+                    #dataSet.writersWithCorrespondingImagesTesting[i].append(image)
         dataSet.writersWithCorrespondingImages.clear()
         dataSet.trainingSize=len(dataSet.trainingDataImages)
         dataSet.testingSize=len(dataSet.testingDataImages)

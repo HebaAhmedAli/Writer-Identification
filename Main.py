@@ -1,29 +1,38 @@
-import FeatureExtraction as featureExtraction
 from DataSet import dataSet as dataSet
+import FeatureExtraction as featureExtraction
+from features.CO3 import co3 as co3
 import PerformanceEvaluation as performanceEvaluation
 import KnnIdentification as knnIdentification
 import time
 
+
 start = time.time()
-
-# Load the dataset and devide it between training and testing and make any nedded preprocessing.
-dataSet.loadDataset()
-
 # TODO: Uncomment after testing.
 
-# Extract the featureVectors for all the writers.
-featureVectors=featureExtraction.extractFeatures("co3",dataSet.trainingDataImages,dataSet.writersWithCorrespondingImagesTraining)
+# Load the dataset and devide it between training and testing and make the nedded preprocessing.
+dataSet.loadDataset()
+print("Time taken to loadDataset = "+str(time.time() - start))
+
+sartExtractFeatures=time.time()
+# Extract the featureVectors for all the writers may need additional preprocessing inside.
+classifiedCO3,featureVectors=featureExtraction.extractFeatures("co3",dataSet.trainingDataImages)
 #print(featureVectors) # TODO: Delete after testing
+print("Time taken to extractFeatures = "+str(time.time() - sartExtractFeatures))
 
 # Evaluate the performance on the training data.
-performanceEvaluation.evaluatePerformance(dataSet.writersWithCorrespondingImagesTesting,featureVectors)
+sartEvaluatePerformance=time.time()
+performanceEvaluation.evaluatePerformance("co3",dataSet.testingDataImages,dataSet.testingDataWriters,featureVectors,dataSet.tariningDataWriters,classifiedCO3)
+print("Time taken to evaluatePerformance = "+str(time.time() - sartEvaluatePerformance))
 
 
 # Identify any writer.
-knnIdentification.identifyWriter("co3",featureVectors,1,3)
-
-###############################.
+sartIdentifyWriter=time.time()
+writerImages=knnIdentification.readWriterImages(1)
+writerId=knnIdentification.identifyWriter("co3",featureVectors,dataSet.tariningDataWriters,writerImages[0],classifiedCO3)
+print("This image belongs to writer = "+str(writerId))
+print("Time taken to identifyWriter = "+str(time.time() - sartIdentifyWriter))
 
 # Printing the time taken.
-end = time.time()
-print("Time taken to excute the code = "+str(end - start))
+print("Time taken to excute the code = "+str(time.time() - start))
+
+

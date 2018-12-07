@@ -7,7 +7,7 @@ def processImage(image):
     blurred = cv2.GaussianBlur(image, value, 0)
     grayImage = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
     ret,binarized= cv2.threshold(grayImage,175,255,cv2.THRESH_BINARY)
-    croppedBinarized=binarized[740:3000,350:2400]
+    croppedBinarized=binarized[740:3000,350:2400] # TODO: To change these values.
     return croppedBinarized
 
 # It returns the cropped images after splitting.
@@ -152,7 +152,7 @@ def printContorsLengths(allContors):
 
 # Get all the contors of image in a form of arrays of tuples(x,y)
 # and ignore the contors with length <10
-def getContorsAndDraw(image,x,y,allContors,normalizeContors):
+def getContorsAndDraw(image,x,y,allContors,normalizeContors=False):
     _, contors, _ = cv2.findContours(255-image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     drawing = np.zeros([image.shape[0],image.shape[1],3],np.uint8)
     #print(len(contors))
