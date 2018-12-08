@@ -3,8 +3,9 @@ import FeatureExtraction as featureExtraction
 from features.CO3 import co3 as co3
 import PerformanceEvaluation as performanceEvaluation
 import KnnIdentification as knnIdentification
+import SVMIdentification as SVMIdentification
+import constants
 import time
-import random
 
 start = time.time()
 # TODO: Uncomment after testing.
@@ -19,16 +20,25 @@ classifiedCO3,featureVectors=featureExtraction.extractFeatures("co3",dataSet.tra
 #print(featureVectors) # TODO: Delete after testing
 print("Time taken to extractFeatures = "+str(time.time() - sartExtractFeatures))
 
+svclassifier=None
 # Evaluate the performance on the training data.
 sartEvaluatePerformance=time.time()
-performanceEvaluation.evaluatePerformance("co3",dataSet.testingDataImages,dataSet.testingDataWriters,featureVectors,dataSet.tariningDataWriters,classifiedCO3)
+if constants.svm==True:
+    svclassifier=SVMIdentification.trainSvmModel(featureVectors,dataSet.tariningDataWriters)
+    performanceEvaluation.evaluatePerformanceSVM(svclassifier,"co3",dataSet.testingDataImages,dataSet.testingDataWriters,classifiedCO3)
+else:
+    performanceEvaluation.evaluatePerformance("co3",dataSet.testingDataImages,dataSet.testingDataWriters,featureVectors,dataSet.tariningDataWriters,classifiedCO3)
 print("Time taken to evaluatePerformance = "+str(time.time() - sartEvaluatePerformance))
 
 
 # Identify any writer.
+writerId=-1
 sartIdentifyWriter=time.time()
 writerImages=knnIdentification.readWriterImages(1)
-writerId=knnIdentification.identifyWriter("co3",featureVectors,dataSet.tariningDataWriters,writerImages[0],classifiedCO3)
+if constants.svm==True:
+    writerId=SVMIdentification.identifyWriterSVM(svclassifier,"co3",writerImages[0],classifiedCO3)
+else:
+    writerId=knnIdentification.identifyWriter("co3",featureVectors,dataSet.tariningDataWriters,writerImages[0],classifiedCO3)
 print("(Identification) This image belongs to writer = "+str(writerId)+" , Correct = "+str(26))
 print("Time taken to identifyWriter = "+str(time.time() - sartIdentifyWriter))
 
