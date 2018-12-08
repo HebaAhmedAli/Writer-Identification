@@ -10,8 +10,8 @@ import time
 
 class co3:
     
-    co3Size=200 # 33*33
-    contorSize=100
+    co3Size=100 # 33*33
+    contorSize=50
     epochs=500
     radiousS=co3Size # Not sure
     radiousE=0 # 
@@ -40,7 +40,7 @@ class co3:
     
     def extractTheCO3(image):
         _,contors=preprocessing.segmentCharactersUsingProjection(image,True) 
-        resampledContors=co3.getResampledContors(contors,100)
+        resampledContors=co3.getResampledContors(contors,co3.contorSize)
         return resampledContors
     
     def extractTheCO3AllImages(trainingDataImages):

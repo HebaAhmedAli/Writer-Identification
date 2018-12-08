@@ -64,5 +64,5 @@ def vote(distsArr):
         if votingArrDists[indices[i]] < minDist:
             minDist=votingArrDists[indices[i]]
             nearestIndex=indices[i]
-    print(votingArr,votingArrDists)
+    #print(votingArr,votingArrDists)
     return nearestIndex

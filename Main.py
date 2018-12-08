@@ -29,7 +29,7 @@ print("Time taken to evaluatePerformance = "+str(time.time() - sartEvaluatePerfo
 sartIdentifyWriter=time.time()
 writerImages=knnIdentification.readWriterImages(1)
 writerId=knnIdentification.identifyWriter("co3",featureVectors,dataSet.tariningDataWriters,writerImages[0],classifiedCO3)
-print("(Identification) This image belongs to writer = "+str(writerId)+" , Correct = "+str(25))
+print("(Identification) This image belongs to writer = "+str(writerId)+" , Correct = "+str(26))
 print("Time taken to identifyWriter = "+str(time.time() - sartIdentifyWriter))
 
 # Printing the time taken.
