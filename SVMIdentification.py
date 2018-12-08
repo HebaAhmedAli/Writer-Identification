@@ -3,7 +3,7 @@ from sklearn.svm import SVC
 
 def identifyWriterSVM(svclassifier,method,writerImage,classifiedCO3=[]):
     featureVector=featureExtraction.extractFeaturesDuringIdentification(method,writerImage,classifiedCO3)
-    nearestWriter=svclassifier.predict(featureVector)
+    nearestWriter=svclassifier.predict([featureVector])
     return nearestWriter
 
 def trainSvmModel(featureVectors,tariningDataWriters):
