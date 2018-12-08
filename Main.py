@@ -24,7 +24,7 @@ print("Time taken to extractFeatures = "+str(time.time() - sartExtractFeatures))
 svclassifier=None
 # Evaluate the performance on the training data.
 sartEvaluatePerformance=time.time()
-if constants.svm==True:
+if constants.identification=="svm":
     svclassifier=SVMIdentification.trainSvmModel(featureVectors,dataSet.tariningDataWriters)
     performanceEvaluation.evaluatePerformanceSVM(svclassifier,"co3",dataSet.testingDataImages,dataSet.testingDataWriters,classifiedCO3)
 else:
@@ -36,7 +36,7 @@ print("Time taken to evaluatePerformance = "+str(time.time() - sartEvaluatePerfo
 writerId=-1
 sartIdentifyWriter=time.time()
 writerImages=knnIdentification.readWriterImages(1)
-if constants.svm==True:
+if constants.identification=="svm":
     writerId=SVMIdentification.identifyWriterSVM(svclassifier,"co3",writerImages[0],classifiedCO3)
 else:
     writerId=knnIdentification.identifyWriter("co3",featureVectors,dataSet.tariningDataWriters,writerImages[0],classifiedCO3)

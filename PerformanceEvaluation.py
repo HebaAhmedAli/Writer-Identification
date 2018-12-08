@@ -19,7 +19,7 @@ def evaluatePerformanceSVM(svclassifier,method,testingImages,testingImagesWriter
         correctWriterId=testingImagesWriters[i]
         nearestWriter=SVMIdentification.identifyWriterSVM(svclassifier,method,testingImages[i],classifiedCO3)
         print("(Performance) This image belongs to writer = "+str(nearestWriter)+" , Correct = "+str(correctWriterId))
-        if nearestWriter==correctWriterId:
+        if nearestWriter[0]==correctWriterId:
             correctImages+=1
     print("The performance = "+str(correctImages/len(testingImages))+" ,")
     print("As correcttly identified "+str(correctImages)+" out of "+str(len(testingImages))+" images.")

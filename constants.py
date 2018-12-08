@@ -4,4 +4,4 @@ writersIdSize=89
 k=3
 dontSplit=False
 continueTrainning=False
-svm=True
+identification="svm"
