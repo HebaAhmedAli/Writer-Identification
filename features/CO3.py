@@ -12,7 +12,7 @@ class co3:
     
     co3Size=100 # 33*33
     contorSize=50
-    epochs=500
+    epochs=1000
     radiousS=co3Size # Not sure
     radiousE=0 # 
     learningRateS=0.9

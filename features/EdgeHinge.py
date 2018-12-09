@@ -1,4 +1,3 @@
-import constants
 import DataSet as ds
 import numpy as np
 import cv2
@@ -52,8 +51,7 @@ def deltaY(index,directions):
     return y
 
 def hinge(edgeImg,directions):
-    
-    hist=np.zeros(directions*(2*directions-3),dtype=int) 
+    hist=[0 for i in range(directions*(2*directions-3))]  # Heba
     nb=0
     height=edgeImg.shape[0]
     width=edgeImg.shape[1] 
@@ -70,7 +68,7 @@ def hinge(edgeImg,directions):
         histIdx.append(histIdx[i]+lookforward[i])
        # print(histIdx[i])
     for y in range (0,height-1):
-       for x in range (1,width-1):
+       for x in range (0,width-1):
            if edgeImg[y][x]:
                for i in range (0,2*directions-3):               
                    nextX = x+deltaX(i,directions)
@@ -86,19 +84,19 @@ def hinge(edgeImg,directions):
                                          nb+=1
                         
                    
-    hist=hist/nb
+    hist=[hist[i]/nb for i in range(len(hist))]  # Heba
     #print ("Histogram-Hinge")
     #print(hist)
     return hist   
            
 def edgeDirection(edgeImg,directions):
-    hist=np.zeros(directions,dtype=int)
+    hist=[0 for i in range(directions)]  # Heba
     nb=0
     height=edgeImg.shape[0]
     width=edgeImg.shape[1]      
     for y in range (0,height-1):
-        for x in range (1,width-1):
-            if edgeImg[y][x]:
+        for x in range (0,width-1):
+           if edgeImg[y][x]:
                 #print("Edge Pixel")
                 for i in range (0,directions-1):
                     nextX = x+deltaX(i,directions)
@@ -109,7 +107,7 @@ def edgeDirection(edgeImg,directions):
                             hist[i] +=1
                             #print (hist[i])
                             nb+=1
-    hist=hist/nb
+    hist=[hist[i]/nb for i in range(len(hist))]  # Heba
     #print ("Histogram-Direction")
     #print(hist)
     return hist
@@ -117,9 +115,8 @@ def getFeatureVector(image):
     # TODO: Write our method for extracting the feature vector.
     featureVector=[]
     edgeImg = getEdges(image)
-    featureVector.append(hinge(edgeImg,12))
-    
-    #featureVector.append(edgeDirection(edgeImg,12))
+    featureVector+=hinge(edgeImg,12)  # Heba 
+    featureVector+=edgeDirection(edgeImg,12)   # Heba
     return featureVector
 def getFeatureVectors(trainingDataImages):
     # Initialize the vectors of each image with empty vector.

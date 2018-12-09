@@ -34,3 +34,31 @@ def extractFeaturesDuringIdentification(method,writerImage,classifiedCO3=[]):
         return horizontalScan.getFeatureVector(writerImage)
     elif method=="hmm":
         return hmm.getFeatureVector(writerImage)
+    
+def extractAndConcatinateFeautures(methods,trainingDataImages):
+    methodsFeatureVectors=[]
+    classifiedCO3=[]
+    for i in range(len(methods)):
+        featureVectors=[]
+        if methods[i]=="co3":
+            classifiedCO3,featureVectors=extractFeatures(methods[i],trainingDataImages)
+        else:
+            _,featureVectors=extractFeatures(methods[i],trainingDataImages)
+        methodsFeatureVectors.append(featureVectors)
+    
+    featureVectors=methodsFeatureVectors[0]
+    for i in range(1,len(methodsFeatureVectors),1):
+        for j in range(len(methodsFeatureVectors[0])):
+            featureVectors[j]+=methodsFeatureVectors[i][j]
+        print(len(featureVectors[0]))
+    print(len(featureVectors))
+    return classifiedCO3,featureVectors
+
+def extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,classifiedCO3=[]):
+    methodsFeatureVector=[]
+    for i in range(len(methods)):
+        methodsFeatureVector.append(extractFeaturesDuringIdentification(methods[i],writerImage,classifiedCO3))    
+    featureVector=methodsFeatureVector[0]
+    for i in range(1,len(methodsFeatureVector),1):
+        featureVector+=methodsFeatureVector[i]   
+    return featureVector
