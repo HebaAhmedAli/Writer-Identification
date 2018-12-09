@@ -152,21 +152,27 @@ def printContorsLengths(allContors):
 
 # Get all the contors of image in a form of arrays of tuples(x,y)
 # and ignore the contors with length <10
-def getContorsAndDraw(image,x,y,allContors,normalizeContors=False):
+def getContorsAndDraw(image,x,y,allContors,normalizeContors=False, approximateContours=False):
     _, contors, _ = cv2.findContours(255-image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    approx = []
     drawing = np.zeros([image.shape[0],image.shape[1],3],np.uint8)
-    #print(len(contors))
     for j in range(len(contors)):
         if (len(contors[j]) > 10):
-            # TODO: Delete after testing.
-            cv2.drawContours(drawing,contors, j, (0,255,0), 2)
-            ############################.
             if normalizeContors==True:
                 contors[j]=(contors[j]-np.mean(contors[j], axis=0))/[[image.shape[1],image.shape[0]]]
             contorAsTuple=[(contors[j][i][0][0],contors[j][i][0][1]) for i in range(len(contors[j]))]
-            allContors.append(contorAsTuple)
+            allContors.append(contorAsTuple) # TODO: Delete after testing.
+        epsilon = 0.012*cv2.arcLength(contors[j],True)
+        approx.append(cv2.approxPolyDP(contors[j],epsilon,True))
+        print("p1 "+ str(contors[j]))
+        #print("contour len is "+ str(epsilon))
+        #print(len(contors))
+        ############################.
         # TODO: Delete after test.
+        #cv2.drawContours(drawing,approx, j, (0,255,0),4)
         #cv2.imwrite("toTest/c"+str(y)+"_"+str(x)+".png",drawing)
         #########################.
-    
+    print("approx len "+ str(len(approx)))
+    cv2.drawContours(drawing,approx, -1, (0,255,0),1)
+    cv2.imwrite("toTest/c"+str(y)+"_"+str(x)+".png",drawing)
     

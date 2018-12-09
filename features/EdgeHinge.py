@@ -69,19 +69,19 @@ def hinge(edgeImg,directions):
     for i in range (2*directions-2):
         histIdx.append(histIdx[i]+lookforward[i])
        # print(histIdx[i])
-    for x in range (0,height-1):
-       for y in range (1,width-1):
-           if edgeImg[x][y]:
+    for y in range (0,height-1):
+       for x in range (1,width-1):
+           if edgeImg[y][x]:
                for i in range (0,2*directions-3):               
                    nextX = x+deltaX(i,directions)
                    nextY = y+deltaY(i,directions)
                    if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
-                        if edgeImg[nextX][nextY]:
+                        if edgeImg[nextY][nextX]:
                             for j in range (0,lookforward[i]):
                                 nextX = x+deltaX(i+2+j,directions)
                                 nextY = y+deltaY(i+2+j,directions)
                                 if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
-                                    if edgeImg[nextX][nextY]:
+                                    if edgeImg[nextY][nextX]:
                                          hist[histIdx[i]+j] += 1
                                          nb+=1
                         
@@ -96,15 +96,15 @@ def edgeDirection(edgeImg,directions):
     nb=0
     height=edgeImg.shape[0]
     width=edgeImg.shape[1]      
-    for x in range (0,height-1):
-        for y in range (1,width-1):
-            if edgeImg[x][y]:
+    for y in range (0,height-1):
+        for x in range (1,width-1):
+            if edgeImg[y][x]:
                 #print("Edge Pixel")
                 for i in range (0,directions-1):
                     nextX = x+deltaX(i,directions)
                     nextY = y+deltaY(i,directions)
                     if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
-                        if edgeImg[nextX][nextY]:
+                        if edgeImg[nextY][nextX]:
                             #print("Next Edge Pixel")
                             hist[i] +=1
                             #print (hist[i])
@@ -119,7 +119,7 @@ def getFeatureVector(image):
     edgeImg = getEdges(image)
     featureVector.append(hinge(edgeImg,12))
     
-    featureVector.append(edgeDirection(edgeImg,12))
+    #featureVector.append(edgeDirection(edgeImg,12))
     return featureVector
 def getFeatureVectors(trainingDataImages):
     # Initialize the vectors of each image with empty vector.

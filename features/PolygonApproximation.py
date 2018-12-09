@@ -1,11 +1,14 @@
-import constants
-def getFeatureVector(image):
-    # TO DO: Write our method for extracting the feature vector for this image.
+import Preprocessing as pp
+import cv2
+
+# The function input is array of writers images
+def getFeatureVector(writerWithCoresspondingImages):
+    # TO DO: Write our method for extracting the feature vector.
     featureVector=[]
-    featureVector.append((1,2))
-    featureVector.append((2,3))
-    featureVector.append((5))
-    featureVector.append((0))
+    print("bo2 bo2  "+str(len(writerWithCoresspondingImages)))
+    cnt = pp.splitImageIntoSmallImagesAndGetContors(writerWithCoresspondingImages,
+            writerWithCoresspondingImages.shape[1], writerWithCoresspondingImages.shape[0])
+
     return featureVector
 
 def getFeatureVectors(trainingDataImages):
