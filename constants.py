@@ -5,4 +5,4 @@ k=3
 dontSplit=False
 continueTrainning=False
 identification="svm"  # Change to knn to use the knnIdentification.
-methods=["co3","edgeHinge"]
+methods=["contorBasedOrientation"] #"co3","edgeHinge",

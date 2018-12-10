@@ -12,7 +12,7 @@ class co3:
     
     co3Size=100 # 33*33
     contorSize=50
-    epochs=1000
+    epochs=5000
     radiousS=co3Size # Not sure
     radiousE=0 # 
     learningRateS=0.9
@@ -165,6 +165,8 @@ class co3:
         return newContor
     
     def printWeights(classifiedCO3):
+       if len(classifiedCO3)==0:
+           return
        file=open("weights.txt","w")
        for i in range(co3.co3Size):
            file.write("#"+str(i)+"\n")
