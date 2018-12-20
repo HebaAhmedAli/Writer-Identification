@@ -3,7 +3,7 @@ import Preprocessing as preprocessing
 
 def getFeatureVector(image):
     
-    _ ,allcontour = preprocessing.segmentCharactersUsingProjection(image)
+    _ ,allcontour = preprocessing.segmentCharactersUsingProjection(image,"contorBasedOrientation")
 
     
     f1Normalized =[0 for i in range(9)]

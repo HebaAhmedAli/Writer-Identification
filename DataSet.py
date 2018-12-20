@@ -2,19 +2,17 @@ import Preprocessing as preprocessing
 from matplotlib import pyplot as plt
 import constants
 import cv2
+import os
 
 class dataSet:
-    dataSize=1539
-    trainingSize=0
-    testingSize=0
     # Contains all the processed training images.
     trainingDataImages=[]
     # Contains all the corresponding training writers.
-    tariningDataWriters=[]
+    tariningDataWriters=[1,1,2,2,3,3]
     # Contains all the processed testing images.
-    testingDataImages=[]
+    #testingDataImages=[]
     # Contains all the corresponding testing writers.
-    testingDataWriters=[]
+    #testingDataWriters=[]
     # The index coressponding to writer id 
     # and contains all the processed images writen by this writer in the training data.
     #writersWithCorrespondingImagesTraining=[[] for i in range(constants.writersIdSize)] 
@@ -24,48 +22,39 @@ class dataSet:
     
     # The index coressponding to writer id 
     # and contains all the processed images writen by this writer in all data to be used while reading.
-    writersWithCorrespondingImages=[[] for i in range(constants.writersIdSize)] 
+    #writersWithCorrespondingImages=[[] for i in range(constants.writersIdSize)] 
     
       
-    def loadDataset():
+    def loadDataset(file_name):
+        dataSet.trainingDataImages.clear()
         # Make any needed preprocessing
-        with open("meta/forms/forms.txt", "r") as file:
-            #i=0
-            for line in file:
-                if line[0]!='#':
-                    data=line.split()
-                    image= cv2.imread('data/'+data[0]+'.png')
-                    processedImage=preprocessing.processImage(image)
-                    dataSet.writersWithCorrespondingImages[int(data[1])].append(processedImage)
-                    # TODO: Delete after testing.
-                    """
-                    if i==0:
-                        dataSet.show(image)
-                        dataSet.show(processedImage)
-                        i+=1
-                    """
-                    ############################.
-        dataSet.splitBetweenTrainingAndTesting()
-        print("finishing data load and split it between training = "+str(dataSet.trainingSize)+" and testing = "+str(dataSet.testingSize))
+        image= cv2.imread('data/'+file_name+'/1/1'+constants.extension,0)
+        processedImage=preprocessing.processImage(image)
+        #cv2.imwrite("img_cropped1.jpg", processedImage)
+        dataSet.trainingDataImages.append(processedImage)
+        image= cv2.imread('data/'+file_name+'/1/2'+constants.extension,0)
+        processedImage=preprocessing.processImage(image)
+        #cv2.imwrite("img_cropped2.jpg", processedImage)
+        dataSet.trainingDataImages.append(processedImage)
+        image= cv2.imread('data/'+file_name+'/2/1'+constants.extension,0)
+        processedImage=preprocessing.processImage(image)
+        #cv2.imwrite("img_cropped3.jpg", processedImage)
+        dataSet.trainingDataImages.append(processedImage)
+        image= cv2.imread('data/'+file_name+'/2/2'+constants.extension,0)
+        processedImage=preprocessing.processImage(image)
+        #cv2.imwrite("img_cropped4.jpg", processedImage)
+        dataSet.trainingDataImages.append(processedImage)
+        image= cv2.imread('data/'+file_name+'/3/1'+constants.extension,0)
+        processedImage=preprocessing.processImage(image)
+        #cv2.imwrite("img_cropped5.jpg", processedImage)
+        dataSet.trainingDataImages.append(processedImage)
+        image= cv2.imread('data/'+file_name+'/3/2'+constants.extension,0)
+        processedImage=preprocessing.processImage(image)
+        #cv2.imwrite("img_cropped6.jpg", processedImage)
+        dataSet.trainingDataImages.append(processedImage)
         return  
  
-    def splitBetweenTrainingAndTesting():
-        for i in range(constants.writersIdSize):
-            splitingIndex=len(dataSet.writersWithCorrespondingImages[i])/2 # TODO: TO change the ratio.
-            for j in range(len(dataSet.writersWithCorrespondingImages[i])):
-                image=dataSet.writersWithCorrespondingImages[i][j]
-                if j<splitingIndex or constants.dontSplit:
-                    dataSet.trainingDataImages.append(image)
-                    dataSet.tariningDataWriters.append(i)
-                    #dataSet.writersWithCorrespondingImagesTraining[i].append(image)
-                else:
-                    dataSet.testingDataImages.append(image)
-                    dataSet.testingDataWriters.append(i)
-                    #dataSet.writersWithCorrespondingImagesTesting[i].append(image)
-        dataSet.writersWithCorrespondingImages.clear()
-        dataSet.trainingSize=len(dataSet.trainingDataImages)
-        dataSet.testingSize=len(dataSet.testingDataImages)
-        return
+    
         
     # TODO: Delete after testing.
     def show(image):
@@ -74,6 +63,17 @@ class dataSet:
         # Display an image on the axes, with nearest neighbour interpolation
         plt.imshow(image, interpolation='nearest',cmap="gray")
         return
+    
+    def readTestNumbers(path):
+        _,directories,_=next(os.walk(path))
+        directories=sorted(directories)
+        return directories
+    
+    def readWriterImage(file_name):
+        image= cv2.imread('data/'+file_name+'/test'+constants.extension,0)
+        processedImage=preprocessing.processImage(image)
+        return processedImage
+        
 
 
         

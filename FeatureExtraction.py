@@ -45,13 +45,10 @@ def extractAndConcatinateFeautures(methods,trainingDataImages):
         else:
             _,featureVectors=extractFeatures(methods[i],trainingDataImages)
         methodsFeatureVectors.append(featureVectors)
-    
     featureVectors=methodsFeatureVectors[0]
     for i in range(1,len(methodsFeatureVectors),1):
         for j in range(len(methodsFeatureVectors[0])):
             featureVectors[j]+=methodsFeatureVectors[i][j]
-        print(len(featureVectors[0]))
-    print(len(featureVectors))
     return classifiedCO3,featureVectors
 
 def extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,classifiedCO3=[]):
