@@ -4,8 +4,6 @@ import Preprocessing as preprocessing
 import constants
 import numpy as np
 import random
-import math
-import cv2
 import time
 from threading import Thread
 
