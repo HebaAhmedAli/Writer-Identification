@@ -30,7 +30,7 @@ def readWriterImages(imagesNum=1):
     x=1
     writerImages=[]
     for i in range(imagesNum):
-       image= cv2.imread('writerImagesToIdentify/'+str(x)+'.png')
+       image= cv2.imread('writerImagesToIdentify/'+str(x)+'.png',0)
        processedImage=preprocessing.processImage(image)
        x=x+1
        writerImages.append(processedImage);

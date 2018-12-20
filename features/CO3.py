@@ -7,12 +7,13 @@ import random
 import math
 import cv2
 import time
+from threading import Thread
 
 class co3:
     
-    co3Size=100 # 33*33
-    contorSize=50
-    epochs=5000
+    co3Size=50 # 80
+    contorSize=40
+    epochs=100 # 200
     radiousS=co3Size # Not sure
     radiousE=0 # 
     learningRateS=0.9
@@ -27,6 +28,10 @@ class co3:
         featureVector=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
         return featureVector
     
+    def getFeatureVectorThread(featureVector,classifiedCO3,imageCO3):
+        featureVector+=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
+        
+    
     
     def matchTheCO3ToCalcPDF(classifiedCO3,allCO3):
         if len(allCO3) == 0:
@@ -39,7 +44,7 @@ class co3:
         
     
     def extractTheCO3(image):
-        _,contors=preprocessing.segmentCharactersUsingProjection(image,True) 
+        _,contors=preprocessing.segmentCharactersUsingProjection(image,"co3",True) 
         resampledContors=co3.getResampledContors(contors,co3.contorSize)
         return resampledContors
     
@@ -53,8 +58,9 @@ class co3:
     
     
     def classifyTheCO3UsingKohenenMap(trainingDataImages):
+        start=time.time()
         allCO3,imagesCO3=co3.extractTheCO3AllImages(trainingDataImages)
-        print("len of allCO3 "+str(len(allCO3)))
+        print("len of allCO3 "+str(len(allCO3))+" time "+str(time.time()-start))
         # Run the kohenen self organizing map algorithm.
         classifiedCO3=[]
         if constants.continueTrainning == True:
@@ -100,13 +106,27 @@ class co3:
         # Initialize the vectors of each image with empty vector.
         start2 = time.time()
         featureVectors=[[] for i in range(len(trainingDataImages))] 
+        '''
+        threads = [co3.createThread(classifiedCO3,imagesCO3[i],i) for i in range(len(trainingDataImages))]
+        for t in threads:
+            t[0].start()
+        for t in threads:
+            t[0].join()
+            print("thread index = "+str(t[2]))
+            featureVectors[t[2]] = t[1]
+        '''
         for i in range(len(trainingDataImages)):
             start = time.time()
             featureVectors[i]=co3.getFeatureVector(classifiedCO3,imagesCO3[i])
             print("Time taken to excute the getFeatureVector = "+str(time.time() - start))
+        
         print("Time taken to excute the featureVectors loop = "+str(time.time() - start2))
         return classifiedCO3,featureVectors
-
+        
+    def createThread(classifiedCO3,imageCO3,index):
+        featureVector = []
+        thread = Thread(target=co3.getFeatureVectorThread, args=(featureVector,classifiedCO3,imageCO3))
+        return (thread, featureVector ,index)
 
     # TODO: Delete after testing.
     def show(image):
@@ -114,21 +134,16 @@ class co3:
         plt.figure(figsize=(10, 10))
         # Display an image on the axes, with nearest neighbour interpolation
         plt.imshow(image, interpolation='nearest')
-        
+
     def getTheIndexOfMinContorDiff(allContors,contor):
-        allContorsDiff=[]
+        minIndex=-1
+        minDist=10000000
         for i in range(len(allContors)):
-            totalDist=0
-            for j in range(len(contor)):
-                #print(len(contor),len(allContors[i]),i,j)
-                a = np.array(allContors[i][j])
-                b = np.array(contor[j])
-                dist = np.linalg.norm(a-b)
-                totalDist+=abs(dist)
-            allContorsDiff.append(totalDist)
-            #print(totalDist)
-        return np.argmin(allContorsDiff)
-    
+            totalDist=sum([np.linalg.norm(np.array(allContors[i][j])-np.array(contor[j])) for j in range(len(contor))])
+            if totalDist<minDist:
+                minDist=totalDist
+                minIndex=i
+        return minIndex
     def getResampledContors(allContorsNormalized,contorRequiredSize):
         resampledContors=[]
         for i in range(len(allContorsNormalized)):

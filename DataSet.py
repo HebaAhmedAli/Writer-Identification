@@ -34,7 +34,7 @@ class dataSet:
             for line in file:
                 if line[0]!='#':
                     data=line.split()
-                    image= cv2.imread('data/'+data[0]+'.png')
+                    image= cv2.imread('data/'+data[0]+'.png',0)
                     processedImage=preprocessing.processImage(image)
                     dataSet.writersWithCorrespondingImages[int(data[1])].append(processedImage)
                     # TODO: Delete after testing.
