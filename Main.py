@@ -6,8 +6,7 @@ import KnnIdentification as knnIdentification
 import SVMIdentification as SVMIdentification
 import constants
 import time
-import numpy
-import itertools
+
 
 directories=dataSet.readTestNumbers("/home/heba/Documents/cmp/fourth_year/pattern/Writer-Identification/data")
 results=open("results.txt","w")

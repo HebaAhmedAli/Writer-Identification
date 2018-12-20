@@ -7,13 +7,13 @@ import random
 import math
 import cv2
 import time
-import itertools
+from threading import Thread
 
 class co3:
     
-    co3Size=80 # 33*33
+    co3Size=50 # 80
     contorSize=40
-    epochs=200
+    epochs=100 # 200
     radiousS=co3Size # Not sure
     radiousE=0 # 
     learningRateS=0.9
@@ -27,6 +27,10 @@ class co3:
             imageCO3=co3.extractTheCO3(image)
         featureVector=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
         return featureVector
+    
+    def getFeatureVectorThread(featureVector,classifiedCO3,imageCO3):
+        featureVector+=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
+        
     
     
     def matchTheCO3ToCalcPDF(classifiedCO3,allCO3):
@@ -102,13 +106,27 @@ class co3:
         # Initialize the vectors of each image with empty vector.
         start2 = time.time()
         featureVectors=[[] for i in range(len(trainingDataImages))] 
+        '''
+        threads = [co3.createThread(classifiedCO3,imagesCO3[i],i) for i in range(len(trainingDataImages))]
+        for t in threads:
+            t[0].start()
+        for t in threads:
+            t[0].join()
+            print("thread index = "+str(t[2]))
+            featureVectors[t[2]] = t[1]
+        '''
         for i in range(len(trainingDataImages)):
             start = time.time()
             featureVectors[i]=co3.getFeatureVector(classifiedCO3,imagesCO3[i])
             print("Time taken to excute the getFeatureVector = "+str(time.time() - start))
+        
         print("Time taken to excute the featureVectors loop = "+str(time.time() - start2))
         return classifiedCO3,featureVectors
-
+        
+    def createThread(classifiedCO3,imageCO3,index):
+        featureVector = []
+        thread = Thread(target=co3.getFeatureVectorThread, args=(featureVector,classifiedCO3,imageCO3))
+        return (thread, featureVector ,index)
 
     # TODO: Delete after testing.
     def show(image):
