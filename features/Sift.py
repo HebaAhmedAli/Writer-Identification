@@ -9,10 +9,10 @@ import cv2
 
 class sift:
     
-    siftSize=1000   # no of interest points in each image
-                  # we will need to classify siftSize * no of images 
-    surfSize=1000  # no of interest points in each image
-                  # we will need to classify siftSize * no of images
+    siftSize=50   # no of clusters
+    siftLimit=1000     
+    surfLimit=1000  # no of interest points in each image
+                    # we will need to classify siftSize * no of images
     vetorSize=128
     epochs=100 # 200
     radiousS=siftSize # Not sure
@@ -47,21 +47,24 @@ class sift:
     def extractTheSift(image):
         imageSift=[]       
         if constants.siftOrserf=="sift":
-            siift = cv2.xfeatures2d.SIFT_create(sift.siftSize)
+            siift = cv2.xfeatures2d.SIFT_create()
             (kps,imageSift) = siift.detectAndCompute(image, None)
+            imageSift/=255
             print("# kps: {}, descriptors: {}".format(len(kps), imageSift.shape))
         else:
-            surf = cv2.xfeatures2d.SURF_create(sift.surfSize)
+            surf = cv2.xfeatures2d.SURF_create(sift.surfLimit)
             kps,imageSift = surf.detectAndCompute(image,None)
-        imageSift/=255
-        return imageSift.tolist()
+        return imageSift
     
     def extractTheSiftAllImages(trainingDataImages):
         allSift=[]
         imagesSift=[[] for i in range(len(trainingDataImages))]
         for i in range(len(trainingDataImages)):
              imagesSift[i]=sift.extractTheSift(trainingDataImages[i])
-             allSift+=imagesSift[i]
+             if i==0:
+                 allSift=imagesSift[i]
+             else:
+                 allSift=np.vstack(( allSift,imagesSift[i]))
         return allSift,imagesSift
     
     def classifyTheSiftUsingKmean(trainingDataImages):
@@ -70,7 +73,7 @@ class sift:
         print("len of allSift "+str(len(allSift))+" time "+str(time.time()-start))
         # TODO: Run the kmean algorithm.
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-        ret,label,center=cv2.kmeans(allSift,10,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
+        ret,label,center=cv2.kmeans(allSift,sift.siftSize,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
         classifiedSift= center
         return classifiedSift,imagesSift
  
@@ -80,7 +83,10 @@ class sift:
         print("len of allSift "+str(len(allSift))+" time "+str(time.time()-start))
         # Run the kohenen self organizing map algorithm.
         classifiedSift=[]
-        classifiedSift=[[random.uniform(0, 1) for j in range(sift.vetorSize)] for i in range(sift.siftSize)]
+        if constants.siftOrserf=="sift":
+            classifiedSift=[[random.uniform(0, 1) for j in range(sift.vetorSize)] for i in range(sift.siftSize)]
+        else:
+            classifiedSift=[[random.uniform(-1, 1) for j in range(sift.vetorSize)] for i in range(sift.siftSize)]
         radious=sift.radiousS
         rate=sift.learningRateS
         for k in range(sift.epochs):

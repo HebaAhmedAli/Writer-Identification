@@ -25,7 +25,7 @@ def extractFeaturesDuringIdentification(method,writerImage,writerImageGray,class
     if method=="co3":
         return co3.getFeatureVector(classifiedCO3,[],False,writerImage)
     elif method=="sift":
-        return co3.getFeatureVector(classifiedSift,[],False,writerImageGray)
+        return sift.getFeatureVector(classifiedSift,[],False,writerImageGray)
     elif method=="edgeHinge":
         return edgeHinge.getFeatureVector(writerImage)
     elif method=="contorBasedOrientation":
@@ -34,8 +34,6 @@ def extractFeaturesDuringIdentification(method,writerImage,writerImageGray,class
         return polygonApproximation.getFeatureVector(writerImage)
     elif method=="horizontalScan":
         return horizontalScan.getFeatureVector(writerImage)
-    elif method=="sift":
-        return sift.getFeatureVector(writerImage)
     
 def extractAndConcatinateFeautures(methods,trainingDataImages,trainingDataImagesGray):
     methodsFeatureVectors=[]

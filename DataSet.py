@@ -28,6 +28,7 @@ class dataSet:
       
     def loadDataset(file_name):
         dataSet.trainingDataImages.clear()
+        dataSet.trainingDataImagesGray.clear()
         # Make any needed preprocessing
         image= cv2.imread('data/'+file_name+'/1/1'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
@@ -79,7 +80,9 @@ class dataSet:
     
     def readTestNumbers(path):
         _,directories,_=next(os.walk(path))
-        directories=sorted(directories)
+        #directories=sorted(directories)
+        directories.sort(key=int)
+        #print(directories)
         return directories
     
     def readWriterImage(file_name):

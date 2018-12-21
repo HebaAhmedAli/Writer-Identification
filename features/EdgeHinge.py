@@ -186,7 +186,7 @@ def getFeatureVector(image):
     # TODO: Write our method for extracting the feature vector.
     featureVector=[]
     edgeImg = getEdges(image)
-    featureVector+=hingeOptim(edgeImg,12)  # Heba 
+    #featureVector+=hingeOptim(edgeImg,12)  # Heba 
     featureVector+=edgeDirectionOptim(edgeImg,12)   # Heba
     return featureVector
 def getFeatureVectors(trainingDataImages):
