@@ -3,7 +3,7 @@ import features.EdgeHinge as edgeHinge
 import features.ContorBasedOrientation as contorBasedOrientation
 import features.PolygonApproximation as polygonApproximation
 import features.HorizontalScan as horizontalScan
-import features.HMM as hmm
+from features.Sift import sift as sift
 
 # Extract the features for all writers during training or testing phase.
 def extractFeatures(method,trainingDataImages):
@@ -17,13 +17,15 @@ def extractFeatures(method,trainingDataImages):
         return polygonApproximation.getFeatureVectors(trainingDataImages)
     elif method=="horizontalScan":
         return horizontalScan.getFeatureVectors(trainingDataImages)
-    elif method=="hmm":
-        return hmm.getFeatureVectors(trainingDataImages)
+    elif method=="sift":
+        return sift.getFeatureVectors(trainingDataImages)
 
 # Extract the features for one writer during identification phase.
-def extractFeaturesDuringIdentification(method,writerImage,classifiedCO3=[]):
+def extractFeaturesDuringIdentification(method,writerImage,classifiedCO3=[],classifiedSift=[]):
     if method=="co3":
         return co3.getFeatureVector(classifiedCO3,[],False,writerImage)
+    elif method=="sift":
+        return co3.getFeatureVector(classifiedSift,[],False,writerImage)
     elif method=="edgeHinge":
         return edgeHinge.getFeatureVector(writerImage)
     elif method=="contorBasedOrientation":
@@ -32,16 +34,19 @@ def extractFeaturesDuringIdentification(method,writerImage,classifiedCO3=[]):
         return polygonApproximation.getFeatureVector(writerImage)
     elif method=="horizontalScan":
         return horizontalScan.getFeatureVector(writerImage)
-    elif method=="hmm":
-        return hmm.getFeatureVector(writerImage)
+    elif method=="sift":
+        return sift.getFeatureVector(writerImage)
     
 def extractAndConcatinateFeautures(methods,trainingDataImages):
     methodsFeatureVectors=[]
     classifiedCO3=[]
+    classifiedSift=[]
     for i in range(len(methods)):
         featureVectors=[]
         if methods[i]=="co3":
             classifiedCO3,featureVectors=extractFeatures(methods[i],trainingDataImages)
+        elif methods[i]=="sift":
+            classifiedSift,featureVectors=extractFeatures(methods[i],trainingDataImages)
         else:
             _,featureVectors=extractFeatures(methods[i],trainingDataImages)
         methodsFeatureVectors.append(featureVectors)
@@ -49,12 +54,12 @@ def extractAndConcatinateFeautures(methods,trainingDataImages):
     for i in range(1,len(methodsFeatureVectors),1):
         for j in range(len(methodsFeatureVectors[0])):
             featureVectors[j]+=methodsFeatureVectors[i][j]
-    return classifiedCO3,featureVectors
+    return classifiedCO3,classifiedSift,featureVectors
 
-def extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,classifiedCO3=[]):
+def extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,classifiedCO3=[],classifiedSift=[]):
     methodsFeatureVector=[]
     for i in range(len(methods)):
-        methodsFeatureVector.append(extractFeaturesDuringIdentification(methods[i],writerImage,classifiedCO3))    
+        methodsFeatureVector.append(extractFeaturesDuringIdentification(methods[i],writerImage,classifiedCO3,classifiedSift))    
     featureVector=methodsFeatureVector[0]
     for i in range(1,len(methodsFeatureVector),1):
         featureVector+=methodsFeatureVector[i]   

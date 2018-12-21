@@ -51,9 +51,10 @@ def deltaY(index,directions):
         return -1*y
     return y
 
+
 def hinge(edgeImg,directions):
     #hist=[0 for i in range(directions*(2*directions-3))]  # Heba
-    hist=np.zeros((12,)).tolist()
+    hist=np.zeros((directions*(2*directions-3),))
     nb=0
     height=edgeImg.shape[0]
     width=edgeImg.shape[1] 
@@ -92,9 +93,49 @@ def hinge(edgeImg,directions):
     #print(hist)
     return hist.tolist()   
     
+def hingeOptim(edgeImg,directions):
+    #hist=[0 for i in range(directions*(2*directions-3))]  # Heba
+    hist=np.zeros((directions*(2*directions-3),))
+    nb=0
+    height=edgeImg.shape[0]
+    width=edgeImg.shape[1] 
+    lookforward=[]
+    histIdx=[]
+
+    lookforward.append(2*directions-3)
+    for i in range (2*directions-2):
+        lookforward.append(2*directions-3-i)
+        #print (lookforward[i])
+    
+    histIdx.append(0)    
+    for i in range (2*directions-2):
+        histIdx.append(histIdx[i]+lookforward[i])
+       # print(histIdx[i])
+    white_pixels=np.argwhere(edgeImg)
+    for j in range (0,len(white_pixels)):
+        for i in range (0,2*directions-3):               
+            nextX = white_pixels[j][1]+deltaX(i,directions)
+            nextY = white_pixels[j][0]+deltaY(i,directions)
+            if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
+                        if edgeImg[nextY,nextX]:
+                            for j in range (0,lookforward[i]):
+                                nextX = white_pixels[j][1]+deltaX(i+2+j,directions)
+                                nextY = white_pixels[j][0]+deltaY(i+2+j,directions)
+                                if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
+                                    if edgeImg[nextY,nextX]:
+                                         hist[histIdx[i]+j] += 1
+                                         nb+=1
+                        
+                   
+    #hist=[hist[i]/nb for i in range(len(hist))]  # Heba
+    hist/=nb
+    #print ("Histogram-Hinge")
+    #print(hist)
+    return hist.tolist()   
+    
 def edgeDirectionOptim(edgeImg,directions):
     #hist=[0 for i in range(directions)]  # Heba
-    hist=np.zeros((12,))
+    hist=np.zeros((directions,))
 
     nb=0
     height=edgeImg.shape[0]
@@ -119,7 +160,7 @@ def edgeDirectionOptim(edgeImg,directions):
     return hist.tolist()       
 def edgeDirection(edgeImg,directions):
     #hist=[0 for i in range(directions)]  # Heba
-    hist=np.zeros((12,))
+    hist=np.zeros((directions,))
 
     nb=0
     height=edgeImg.shape[0]
@@ -145,7 +186,7 @@ def getFeatureVector(image):
     # TODO: Write our method for extracting the feature vector.
     featureVector=[]
     edgeImg = getEdges(image)
-    #featureVector+=hinge(edgeImg,12)  # Heba 
+    featureVector+=hingeOptim(edgeImg,12)  # Heba 
     featureVector+=edgeDirectionOptim(edgeImg,12)   # Heba
     return featureVector
 def getFeatureVectors(trainingDataImages):
