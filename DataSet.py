@@ -7,6 +7,7 @@ import os
 class dataSet:
     # Contains all the processed training images.
     trainingDataImages=[]
+    trainingDataImagesGray=[]
     # Contains all the corresponding training writers.
     tariningDataWriters=[1,1,2,2,3,3]
     # Contains all the processed testing images.
@@ -30,28 +31,40 @@ class dataSet:
         # Make any needed preprocessing
         image= cv2.imread('data/'+file_name+'/1/1'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
+        processedImageGray=preprocessing.processImage(image,"gray")
         #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
+        dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/1/2'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
-        #cv2.imwrite("img_cropped2.jpg", processedImage)
+        processedImageGray=preprocessing.processImage(image,"gray")
+        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
+        dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/2/1'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
-        #cv2.imwrite("img_cropped3.jpg", processedImage)
+        processedImageGray=preprocessing.processImage(image,"gray")
+        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
+        dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/2/2'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
-        #cv2.imwrite("img_cropped4.jpg", processedImage)
+        processedImageGray=preprocessing.processImage(image,"gray")
+        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
+        dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/3/1'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
-        #cv2.imwrite("img_cropped5.jpg", processedImage)
+        processedImageGray=preprocessing.processImage(image,"gray")
+        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
+        dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/3/2'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
-        #cv2.imwrite("img_cropped6.jpg", processedImage)
+        processedImageGray=preprocessing.processImage(image,"gray")
+        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
+        dataSet.trainingDataImagesGray.append(processedImageGray)
         return  
  
     
@@ -72,7 +85,8 @@ class dataSet:
     def readWriterImage(file_name):
         image= cv2.imread('data/'+file_name+'/test'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
-        return processedImage
+        processedImageGray=preprocessing.processImage(image,"gray")
+        return processedImage,processedImageGray
         
 
 

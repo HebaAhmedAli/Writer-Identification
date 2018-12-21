@@ -37,8 +37,8 @@ def readWriterImages(imagesNum=1):
        #show(processedImage)
     return writerImages
     
-def identifyWriter(methods,featureVectors,tariningDataWriters,writerImage,classifiedCO3=[],classifiedSift=[]):
-    featureVector=featureExtraction.extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,classifiedCO3,classifiedSift)
+def identifyWriter(methods,featureVectors,tariningDataWriters,writerImage,writerImageGray,classifiedCO3=[],classifiedSift=[]):
+    featureVector=featureExtraction.extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,writerImageGray,classifiedCO3,classifiedSift)
     distsArr=[]
     for i in range(len(featureVectors)):
         if len(featureVectors[i])==0:

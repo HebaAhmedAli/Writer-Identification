@@ -20,18 +20,18 @@ for i in range(len(directories)):
 
     sartExtractFeatures=time.time()
     # Extract the featureVectors for all the writers may need additional preprocessing inside.
-    classifiedCO3,classifiedSift,featureVectors=featureExtraction.extractAndConcatinateFeautures(constants.methods,dataSet.trainingDataImages)
+    classifiedCO3,classifiedSift,featureVectors=featureExtraction.extractAndConcatinateFeautures(constants.methods,dataSet.trainingDataImages,dataSet.trainingDataImagesGray)
     print("Time taken to extractFeatures = "+str(time.time() - sartExtractFeatures))
          
     # Identify any writer.
     writerId=-1
     sartIdentifyWriter=time.time()
-    writerImage=dataSet.readWriterImage(directories[i])
+    writerImage,writerImageGray=dataSet.readWriterImage(directories[i])
     if constants.identification=="svm":
         svclassifier=SVMIdentification.trainSvmModel(featureVectors,dataSet.tariningDataWriters)
-        writerId=SVMIdentification.identifyWriterSVM(svclassifier,constants.methods,writerImage,classifiedCO3,classifiedSift)
+        writerId=SVMIdentification.identifyWriterSVM(svclassifier,constants.methods,writerImage,writerImageGray,classifiedCO3,classifiedSift)
     else:
-        writerId=knnIdentification.identifyWriter(constants.methods,featureVectors,dataSet.tariningDataWriters,writerImage,classifiedCO3,classifiedSift)
+        writerId=knnIdentification.identifyWriter(constants.methods,featureVectors,dataSet.tariningDataWriters,writerImage,writerImageGray,classifiedCO3,classifiedSift)
     print("(Identification) This image belongs to writer = "+str(writerId))
     print("Time taken to identifyWriter = "+str(time.time() - sartIdentifyWriter))
                     

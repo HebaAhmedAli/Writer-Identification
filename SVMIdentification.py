@@ -1,8 +1,8 @@
 import FeatureExtraction as featureExtraction
 from sklearn.svm import SVC
 
-def identifyWriterSVM(svclassifier,methods,writerImage,classifiedCO3=[],classifiedSift=[]):
-    featureVector=featureExtraction.extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,classifiedCO3,classifiedSift)
+def identifyWriterSVM(svclassifier,methods,writerImage,writerImageGray,classifiedCO3=[],classifiedSift=[]):
+    featureVector=featureExtraction.extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,writerImageGray,classifiedCO3,classifiedSift)
     nearestWriter=svclassifier.predict([featureVector])
     return nearestWriter
 

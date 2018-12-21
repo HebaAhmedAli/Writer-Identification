@@ -2,11 +2,13 @@ from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 
-def processImage(image):
+def processImage(image,typeRequired=""):
+    if typeRequired=="gray":
+        return image[740:2950,350:2400]
+       #return image[900:3400,0:2460]  # LLtslem
     value = (5, 5)
     blurred = cv2.GaussianBlur(image, value, 0)
-    #grayImage = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
-    ret,binarized= cv2.threshold(blurred,175,255,cv2.THRESH_BINARY)
+    _,binarized= cv2.threshold(blurred,175,255,cv2.THRESH_BINARY)
     croppedBinarized=binarized[740:2950,350:2400] # TODO: To change these values.
     #croppedBinarized=binarized[900:3400,0:2460] # TODO: LLtslem.
     return croppedBinarized

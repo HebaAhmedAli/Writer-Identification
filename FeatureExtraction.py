@@ -6,7 +6,7 @@ import features.HorizontalScan as horizontalScan
 from features.Sift import sift as sift
 
 # Extract the features for all writers during training or testing phase.
-def extractFeatures(method,trainingDataImages):
+def extractFeatures(method,trainingDataImages,trainingDataImagesGray):
     if method=="co3":
         return co3.getFeatureVectors(trainingDataImages)
     elif method=="edgeHinge":
@@ -18,14 +18,14 @@ def extractFeatures(method,trainingDataImages):
     elif method=="horizontalScan":
         return horizontalScan.getFeatureVectors(trainingDataImages)
     elif method=="sift":
-        return sift.getFeatureVectors(trainingDataImages)
+        return sift.getFeatureVectors(trainingDataImagesGray)
 
 # Extract the features for one writer during identification phase.
-def extractFeaturesDuringIdentification(method,writerImage,classifiedCO3=[],classifiedSift=[]):
+def extractFeaturesDuringIdentification(method,writerImage,writerImageGray,classifiedCO3=[],classifiedSift=[]):
     if method=="co3":
         return co3.getFeatureVector(classifiedCO3,[],False,writerImage)
     elif method=="sift":
-        return co3.getFeatureVector(classifiedSift,[],False,writerImage)
+        return co3.getFeatureVector(classifiedSift,[],False,writerImageGray)
     elif method=="edgeHinge":
         return edgeHinge.getFeatureVector(writerImage)
     elif method=="contorBasedOrientation":
@@ -37,18 +37,18 @@ def extractFeaturesDuringIdentification(method,writerImage,classifiedCO3=[],clas
     elif method=="sift":
         return sift.getFeatureVector(writerImage)
     
-def extractAndConcatinateFeautures(methods,trainingDataImages):
+def extractAndConcatinateFeautures(methods,trainingDataImages,trainingDataImagesGray):
     methodsFeatureVectors=[]
     classifiedCO3=[]
     classifiedSift=[]
     for i in range(len(methods)):
         featureVectors=[]
         if methods[i]=="co3":
-            classifiedCO3,featureVectors=extractFeatures(methods[i],trainingDataImages)
+            classifiedCO3,featureVectors=extractFeatures(methods[i],trainingDataImages,trainingDataImagesGray)
         elif methods[i]=="sift":
-            classifiedSift,featureVectors=extractFeatures(methods[i],trainingDataImages)
+            classifiedSift,featureVectors=extractFeatures(methods[i],trainingDataImages,trainingDataImagesGray)
         else:
-            _,featureVectors=extractFeatures(methods[i],trainingDataImages)
+            _,featureVectors=extractFeatures(methods[i],trainingDataImages,trainingDataImagesGray)
         methodsFeatureVectors.append(featureVectors)
     featureVectors=methodsFeatureVectors[0]
     for i in range(1,len(methodsFeatureVectors),1):
@@ -56,10 +56,10 @@ def extractAndConcatinateFeautures(methods,trainingDataImages):
             featureVectors[j]+=methodsFeatureVectors[i][j]
     return classifiedCO3,classifiedSift,featureVectors
 
-def extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,classifiedCO3=[],classifiedSift=[]):
+def extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,writerImageGray,classifiedCO3=[],classifiedSift=[]):
     methodsFeatureVector=[]
     for i in range(len(methods)):
-        methodsFeatureVector.append(extractFeaturesDuringIdentification(methods[i],writerImage,classifiedCO3,classifiedSift))    
+        methodsFeatureVector.append(extractFeaturesDuringIdentification(methods[i],writerImage,writerImageGray,classifiedCO3,classifiedSift))    
     featureVector=methodsFeatureVector[0]
     for i in range(1,len(methodsFeatureVector),1):
         featureVector+=methodsFeatureVector[i]   
