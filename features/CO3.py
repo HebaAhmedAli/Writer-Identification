@@ -51,6 +51,7 @@ class co3:
         imagesCO3=[[] for i in range(len(trainingDataImages))]
         for i in range(len(trainingDataImages)):
              imagesCO3[i]=co3.extractTheCO3(trainingDataImages[i])
+             print(imagesCO3[i])
              allCO3+=imagesCO3[i]
         return allCO3,imagesCO3
     

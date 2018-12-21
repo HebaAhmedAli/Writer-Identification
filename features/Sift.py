@@ -1,14 +1,18 @@
 from scipy.interpolate import splprep, splev
 from matplotlib import pyplot as plt
 import numpy as np
+import constants
 import random
 import time
 from threading import Thread
+import cv2
 
 class sift:
     
-    siftSize=50   # no of interest points in each image
+    siftSize=1000   # no of interest points in each image
                   # we will need to classify siftSize * no of images 
+    surfSize=1000  # no of interest points in each image
+                  # we will need to classify siftSize * no of images
     vetorSize=128
     epochs=100 # 200
     radiousS=siftSize # Not sure
@@ -35,16 +39,22 @@ class sift:
             return []
         imagePDF=[0 for i in range(sift.siftSize)] 
         for i in range(len(allSift)):
-            siftMinIndex=sift.getTheIndexOfMinContorDiff(classifiedSift,allSift[i])
+            siftMinIndex=sift.getTheIndexOfMinVectorDiff(classifiedSift,allSift[i])
             imagePDF[siftMinIndex]+=(1/len(allSift)) # TODO: Be sure from the devision.
         return imagePDF
         
     
     def extractTheSift(image):
-        imageSift=[]
-        # TODO: extract the Sift here.
-        
-        return imageSift
+        imageSift=[]       
+        if constants.siftOrserf=="sift":
+            siift = cv2.xfeatures2d.SIFT_create(sift.siftSize)
+            (kps,imageSift) = siift.detectAndCompute(image, None)
+            print("# kps: {}, descriptors: {}".format(len(kps), imageSift.shape))
+        else:
+            surf = cv2.xfeatures2d.SURF_create(sift.surfSize)
+            kps,imageSift = surf.detectAndCompute(image,None)
+        imageSift/=255
+        return imageSift.tolist()
     
     def extractTheSiftAllImages(trainingDataImages):
         allSift=[]
@@ -59,18 +69,18 @@ class sift:
         allSift,imagesSift=sift.extractTheSiftAllImages(trainingDataImages)
         print("len of allSift "+str(len(allSift))+" time "+str(time.time()-start))
         # TODO: Run the kmean algorithm.
-        classifiedSift=[]
-        
-        
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+        ret,label,center=cv2.kmeans(allSift,10,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
+        classifiedSift= center
         return classifiedSift,imagesSift
-    
+ 
     def classifyTheSiftUsingKohenenMap(trainingDataImages):
         start=time.time()
         allSift,imagesSift=sift.extractTheSiftAllImages(trainingDataImages)
         print("len of allSift "+str(len(allSift))+" time "+str(time.time()-start))
         # Run the kohenen self organizing map algorithm.
         classifiedSift=[]
-        classifiedSift=[[(random.uniform(-1, 1),random.uniform(-1, 1)) for j in range(sift.vetorSize)] for i in range(sift.siftSize)]
+        classifiedSift=[[random.uniform(0, 1) for j in range(sift.vetorSize)] for i in range(sift.siftSize)]
         radious=sift.radiousS
         rate=sift.learningRateS
         for k in range(sift.epochs):
@@ -99,13 +109,18 @@ class sift:
     
     def updateWeights(classifiedSift,alpha,rate,randomInput):
        for i in range(sift.siftSize):
-           difference=[tuple(np.subtract(randomInput[j],classifiedSift[i][j])) for j in range(len(randomInput))]
-           classifiedSift[i]=[tuple(np.add(classifiedSift[i][j],(rate*alpha[i]*difference[j][0],rate*alpha[i]*difference[j][1]))) for j in range(len(difference))]
-    
+           difference=[np.subtract(randomInput[j],classifiedSift[i][j]) for j in range(len(randomInput))]
+           classifiedSift[i]=[np.add(classifiedSift[i][j],rate*alpha[i]*difference[j]) for j in range(len(difference))]
+           
     # TODO: Remove trainingDataImages.
     def getFeatureVectors(trainingDataImages):
         start = time.time()
-        classifiedSift,imagesSift=sift.classifyTheSiftUsingKohenenMap(trainingDataImages)
+        classifiedSift=[]
+        imagesSift=[]
+        if constants.clusteringMethod=="kohenent":   
+            classifiedSift,imagesSift=sift.classifyTheSiftUsingKohenenMap(trainingDataImages)
+        else:
+            classifiedSift,imagesSift=sift.classifyTheSiftUsingKmean(trainingDataImages)
         print("Time taken to excute the kohenent = "+str(time.time() - start))
         # Initialize the vectors of each image with empty vector.
         start2 = time.time()
@@ -139,7 +154,7 @@ class sift:
         minIndex=-1
         minDist=10000000
         for i in range(len(allVectors)):
-            totalDist=sum([np.linalg.norm(np.array(allVectors[i][j])-np.array(vector[j])) for j in range(len(vector))])
+            totalDist=sum([abs(allVectors[i][j]-vector[j]) for j in range(len(vector))])
             if totalDist<minDist:
                 minDist=totalDist
                 minIndex=i

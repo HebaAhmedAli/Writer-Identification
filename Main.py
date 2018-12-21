@@ -7,7 +7,6 @@ import SVMIdentification as SVMIdentification
 import constants
 import time
 
-
 directories=dataSet.readTestNumbers("/home/heba/Documents/cmp/fourth_year/pattern/Writer-Identification/data")
 results=open("results.txt","w")
 times=open("time.txt","w")
