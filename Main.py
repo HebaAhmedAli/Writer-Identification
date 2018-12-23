@@ -1,7 +1,5 @@
 from DataSet import dataSet as dataSet
 import FeatureExtraction as featureExtraction
-from features.CO3 import co3 as co3
-import PerformanceEvaluation as performanceEvaluation
 import KnnIdentification as knnIdentification
 import SVMIdentification as SVMIdentification
 import constants

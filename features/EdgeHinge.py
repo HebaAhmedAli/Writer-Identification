@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 def getEdges(writerImg):
     #sobelImg = cv2.Sobel(writerImg,-1,dx=1,dy=1,ksize=5)
-    cannyImage = cv2.Canny(writerImg,50,200,5)
+    cannyImage = cv2.Canny(writerImg,100,200)
     #ds.dataSet.show(sobelImg)
     return cannyImage
  
@@ -142,12 +142,17 @@ def edgeDirectionOptim(edgeImg,directions):
     width=edgeImg.shape[1]  
     white_pixels=np.argwhere(edgeImg)
     #print(white_pixels)
-    #print(white_pixels[0][0])
+    #print(white_pixels[0][=0])
     #print(white_pixels[0][1])
-    for j in range (0,len(white_pixels),5):
-        for i in range (0,directions-1):
+    for j in range (0,len(white_pixels),20):
+        for i in range (0,directions):
             nextX = white_pixels[j][1]+deltaX(i,directions)
             nextY = white_pixels[j][0]+deltaY(i,directions)
+            '''
+            print("direction ",i)
+            print("delta X ",deltaX(i,directions))
+            print("delta Y ",deltaY(i,directions))
+            '''
             if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
                 if edgeImg[nextY,nextX]:
                     #print("Next Edge Pixel")
@@ -187,7 +192,7 @@ def getFeatureVector(image):
     featureVector=[]
     edgeImg = getEdges(image)
     #featureVector+=hingeOptim(edgeImg,12)  # Heba 
-    featureVector+=edgeDirectionOptim(edgeImg,12)   # Heba
+    featureVector+=edgeDirectionOptim(edgeImg,8)   # Heba
     return featureVector
 def getFeatureVectors(trainingDataImages):
     # Initialize the vectors of each image with empty vector.

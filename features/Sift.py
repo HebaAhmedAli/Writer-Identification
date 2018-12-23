@@ -4,13 +4,13 @@ import numpy as np
 import constants
 import random
 import time
-from threading import Thread
+from multiprocessing import Process,Manager,Pool
 import cv2
 
 class sift:
     
     siftSize=50   # no of clusters
-    siftLimit=1000     
+    siftLimit=2000     
     surfLimit=1000  # no of interest points in each image
                     # we will need to classify siftSize * no of images
     vetorSize=128
@@ -20,6 +20,10 @@ class sift:
     learningRateS=0.9
     learningRateE=0.015
     s=5 # Stepness factor.
+    
+    manager=Manager()
+    processesNo=5;
+  
    
 
     def getFeatureVector(classifiedSift,imageSift,training=True,image=None):
@@ -29,9 +33,28 @@ class sift:
         featureVector=sift.matchTheSiftToCalcPDF(classifiedSift,imageSift)
         return featureVector
     
-    def getFeatureVectorThread(featureVector,classifiedSift,imageSift):
-        featureVector+=sift.matchTheSiftToCalcPDF(classifiedSift,imageSift)
-        
+    def getFeatureVectorProcess(featureVectors,classifiedSift,imageSift,index):
+        featureVectors[index]=sift.matchTheSiftToCalcPDF(classifiedSift,imageSift)
+        '''
+         featureVector=sift.manager.list([0 for i in range(sift.siftSize)])
+         steps=int(np.ceil(len(imageSift)/sift.processesNo))
+         processes = [Process(target=sift.matchTheSiftToCalcPDFProcess,args= (classifiedSift,imageSift[i*steps:min(i*steps+steps,len(imageSift))],featureVector)) for i in range(sift.processesNo)]
+         for p in processes:
+             p.start()
+         for p in processes:
+             p.join()
+             p.terminate()   
+         featureVectors[index]=featureVector
+         del featureVector
+         '''
+    
+    def matchTheSiftToCalcPDFProcess(classifiedSift,allSift,imagePDF):
+        if len(allSift) == 0:
+            return []
+        for i in range(len(allSift)):
+            siftMinIndex=sift.getTheIndexOfMinVectorDiff(classifiedSift,allSift[i])
+            imagePDF[siftMinIndex]+=(1/len(allSift)) # TODO: Be sure from the devision.
+        return 
     
     
     def matchTheSiftToCalcPDF(classifiedSift,allSift):
@@ -47,7 +70,7 @@ class sift:
     def extractTheSift(image):
         imageSift=[]       
         if constants.siftOrserf=="sift":
-            siift = cv2.xfeatures2d.SIFT_create()
+            siift = cv2.xfeatures2d.SIFT_create(sift.siftLimit)
             (kps,imageSift) = siift.detectAndCompute(image, None)
             imageSift/=255
             print("# kps: {}, descriptors: {}".format(len(kps), imageSift.shape))
@@ -130,29 +153,30 @@ class sift:
         print("Time taken to excute the kohenent = "+str(time.time() - start))
         # Initialize the vectors of each image with empty vector.
         start2 = time.time()
-        featureVectors=[[] for i in range(len(trainingDataImages))] 
-        '''
-        threads = [sift.createThread(classifiedSift,imagesSift[i],i) for i in range(len(trainingDataImages))]
-        for t in threads:
-            t[0].start()
-        for t in threads:
-            t[0].join()
-            print("thread index = "+str(t[2]))
-            featureVectors[t[2]] = t[1]
+        #featureVectors=[[] for i in range(len(trainingDataImages))] 
+        
+        featureVectors=sift.manager.list([[] for i in range(len(trainingDataImages))])
+        processes = [sift.createProcess(classifiedSift,imagesSift[i],i,featureVectors) for i in range(len(trainingDataImages))]
+        for p in processes:
+            p[0].start()
+        for p in processes:
+            p[0].join()
+            print("thread index = "+str(p[1]),str(len(featureVectors[p[1]])))
+            p[0].terminate()
+        featureVectorsTemp=featureVectors
+        del featureVectors
         '''
         for i in range(len(trainingDataImages)):
             start = time.time()
             featureVectors[i]=sift.getFeatureVector(classifiedSift,imagesSift[i])
             print("Time taken to excute the getFeatureVector = "+str(time.time() - start))
-        
+        '''
         print("Time taken to excute the featureVectors loop = "+str(time.time() - start2))
-        return classifiedSift,featureVectors
+        return classifiedSift,featureVectorsTemp
         
-    def createThread(classifiedSift,imageSift,index):
-        featureVector = []
-        thread = Thread(target=sift.getFeatureVectorThread, args=(featureVector,classifiedSift,imageSift))
-        return (thread, featureVector ,index)
-
+    def createProcess(classifiedSift,imageSift,index,featureVectors):
+        process = Process(target=sift.getFeatureVectorProcess, args=(featureVectors,classifiedSift,imageSift,index))
+        return (process ,index)
     
 
 

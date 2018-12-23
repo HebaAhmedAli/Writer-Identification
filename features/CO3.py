@@ -5,7 +5,7 @@ import constants
 import numpy as np
 import random
 import time
-from threading import Thread
+from multiprocessing import Process,Manager,Pool
 
 class co3:
     
@@ -17,7 +17,9 @@ class co3:
     learningRateS=0.9
     learningRateE=0.015
     s=5 # Stepness factor.
-   
+    manager=Manager()
+    processesNo=5;
+  
 
     def getFeatureVector(classifiedCO3,imageCO3,training=True,image=None):
         # TO DO: Write our method for extracting the feature vector.
@@ -26,11 +28,28 @@ class co3:
         featureVector=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
         return featureVector
     
-    def getFeatureVectorThread(featureVector,classifiedCO3,imageCO3):
-        featureVector+=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
+    def getFeatureVectorProcessPool(featureVectors,classifiedCO3,imageCO3,index):
+        pool = Pool(processes=20)   # start 10 worker processes
+        featureVector = pool.apply_async(co3.matchTheCO3ToCalcPDF, (classifiedCO3,imageCO3))      # runs in *only* one process
+        #new section
+        pool.close()
+        pool.join()  
+        featureVectors[index]=featureVector.get()
         
     
-    
+    def getFeatureVectorProcess(featureVectors,classifiedCO3,imageCO3,index):
+        #featureVectors[index]=co3.matchTheCO3ToCalcPDFProcess(classifiedCO3,imageCO3)
+         featureVector=co3.manager.list([0 for i in range(co3.co3Size)])
+         steps=int(np.ceil(len(imageCO3)/co3.processesNo))
+         processes = [Process(target=co3.matchTheCO3ToCalcPDFProcess,args= (classifiedCO3,imageCO3[i*steps:min(i*steps+steps,len(imageCO3))],featureVector)) for i in range(co3.processesNo)]
+         for p in processes:
+             p.start()
+         for p in processes:
+             p.join()
+             p.terminate()   
+         featureVectors[index]=featureVector
+         del featureVector
+
     def matchTheCO3ToCalcPDF(classifiedCO3,allCO3):
         if len(allCO3) == 0:
             return []
@@ -38,6 +57,27 @@ class co3:
         for i in range(len(allCO3)):
             co3MinIndex=co3.getTheIndexOfMinContorDiff(classifiedCO3,allCO3[i])
             imagePDF[co3MinIndex]+=(1/len(allCO3)) # TODO: Be sure from the devision.
+        return imagePDF
+
+    def matchTheCO3ToCalcPDFProcess(classifiedCO3,allCO3,imagePDF):
+        if len(allCO3) == 0:
+            return []
+        for i in range(len(allCO3)):
+            co3MinIndex=co3.getTheIndexOfMinContorDiff(classifiedCO3,allCO3[i])
+            imagePDF[co3MinIndex]+=(1/len(allCO3)) # TODO: Be sure from the devision.
+        return   
+    
+    def matchTheCO3ToCalcPDFPool(classifiedCO3,allCO3):
+        if len(allCO3) == 0:
+            return []
+        imagePDF=[0 for i in range(co3.co3Size)] 
+        for i in range(len(allCO3)):
+            pool = Pool(processes=10)   # start 10 worker processes
+            co3MinIndex = pool.apply_async(co3.getTheIndexOfMinContorDiff, (classifiedCO3,allCO3[i]))      # runs in *only* one process
+            #new section
+            pool.close()
+            pool.join()    
+            imagePDF[co3MinIndex.get()]+=(1/len(allCO3)) # TODO: Be sure from the devision.
         return imagePDF
         
     
@@ -103,28 +143,32 @@ class co3:
         print("Time taken to excute the kohenent = "+str(time.time() - start))
         # Initialize the vectors of each image with empty vector.
         start2 = time.time()
-        featureVectors=[[] for i in range(len(trainingDataImages))] 
-        '''
-        threads = [co3.createThread(classifiedCO3,imagesCO3[i],i) for i in range(len(trainingDataImages))]
-        for t in threads:
-            t[0].start()
-        for t in threads:
-            t[0].join()
-            print("thread index = "+str(t[2]))
-            featureVectors[t[2]] = t[1]
+        #featureVectors=[[] for i in range(len(trainingDataImages))] 
+    
+        featureVectors=co3.manager.list([[] for i in range(len(trainingDataImages))])
+        processes = [co3.createProcess(classifiedCO3,imagesCO3[i],i,featureVectors) for i in range(len(trainingDataImages))]
+        for p in processes:
+            p[0].start()
+        for p in processes:
+            p[0].join()
+            print("thread index = "+str(p[1]),str(len(featureVectors[p[1]])))
+            p[0].terminate()
+        featureVectorsTemp=featureVectors
+        del featureVectors
         '''
         for i in range(len(trainingDataImages)):
             start = time.time()
             featureVectors[i]=co3.getFeatureVector(classifiedCO3,imagesCO3[i])
             print("Time taken to excute the getFeatureVector = "+str(time.time() - start))
-        
+        '''
         print("Time taken to excute the featureVectors loop = "+str(time.time() - start2))
-        return classifiedCO3,featureVectors
+        return classifiedCO3,featureVectorsTemp
+    
         
-    def createThread(classifiedCO3,imageCO3,index):
-        featureVector = []
-        thread = Thread(target=co3.getFeatureVectorThread, args=(featureVector,classifiedCO3,imageCO3))
-        return (thread, featureVector ,index)
+    def createProcess(classifiedCO3,imageCO3,index,featureVectors):
+        #featureVector = co3.manager.list()
+        process = Process(target=co3.getFeatureVectorProcess, args=(featureVectors,classifiedCO3,imageCO3,index))
+        return (process ,index)
 
     # TODO: Delete after testing.
     def show(image):
