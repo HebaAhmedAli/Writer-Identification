@@ -1,6 +1,9 @@
 import DataSet as ds
 import numpy as np
 import cv2
+from multiprocessing import Process,Manager
+
+
 def getEdges(writerImg):
     #sobelImg = cv2.Sobel(writerImg,-1,dx=1,dy=1,ksize=5)
     cannyImage = cv2.Canny(writerImg,100,200)
@@ -174,7 +177,7 @@ def edgeDirection(edgeImg,directions):
         for x in range (0,width-1):
            if edgeImg[y,x]:
                 #print("Edge Pixel")
-                for i in range (0,directions-1):
+                for i in range (0,directions):
                     nextX = x+deltaX(i,directions)
                     nextY = y+deltaY(i,directions)
                     if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
@@ -187,6 +190,11 @@ def edgeDirection(edgeImg,directions):
     #print ("Histogram-Direction")
     #print(hist)
     return hist.tolist()
+def getFeatureVectorProcess(image,featureVector,directions,index):
+    edgeImg = getEdges(image)
+    featureVector+=edgeDirectionOptim(edgeImg,directions)   # Heba
+
+    
 def getFeatureVector(image):
     # TODO: Write our method for extracting the feature vector.
     featureVector=[]
@@ -194,11 +202,42 @@ def getFeatureVector(image):
     #featureVector+=hingeOptim(edgeImg,12)  # Heba 
     featureVector+=edgeDirectionOptim(edgeImg,8)   # Heba
     return featureVector
-def getFeatureVectors(trainingDataImages):
+
+def getFeatureVectorsProcess(trainingDataImages):
     # Initialize the vectors of each image with empty vector.
+    #manager=Manager()
+    #featureVectors=manager.list([[] for i in range(len(trainingDataImages))])
+    featureVectors=[[] for i in range(len(trainingDataImages))] 
+    processes = [createProcess(trainingDataImages[i],8,i) for i in range(len(trainingDataImages))]
+    for p in processes:
+        p[0].start()
+    for p in processes:
+        p[0].join()
+        featureVectors[p[2]]= p[1]
+        print("thread index = "+str(p[2]),str(len(featureVectors[p[2]])))
+        p[0].terminate()
+    featureVectorsTemp=featureVectors
+    del featureVectors
+    
+    '''
     featureVectors=[[] for i in range(len(trainingDataImages))] 
     for i in range(len(trainingDataImages)):
         featureVectors[i]=getFeatureVector(trainingDataImages[i])
+        '''
+    return [],featureVectorsTemp
+
+def getFeatureVectors(trainingDataImages):
+    # Initialize the vectors of each image with empty vector.
+    #manager=Manager()
+    #featureVectors=manager.list([[] for i in range(len(trainingDataImages))])    
+    featureVectors=[[] for i in range(len(trainingDataImages))] 
+    for i in range(len(trainingDataImages)):
+        featureVectors[i]=getFeatureVector(trainingDataImages[i])
+        
     return [],featureVectors
 
-
+def createProcess(image,directions,index):
+    manager=Manager()
+    featureVector = manager.list()
+    process = Process(target=getFeatureVectorProcess, args=(image,featureVector,directions,index))
+    return (process,featureVector,index)
