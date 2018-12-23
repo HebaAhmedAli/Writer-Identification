@@ -8,6 +8,8 @@ import time
 directories=dataSet.readTestNumbers("/home/heba/Documents/cmp/fourth_year/pattern/Writer-Identification/data")
 results=open("results.txt","w")
 times=open("time.txt","w")
+startAllTests = time.time()
+
 for i in range(len(directories)):
     print("Test no "+directories[i])
     start = time.time()
@@ -37,5 +39,6 @@ for i in range(len(directories)):
     results.write(str(writerId[0])+"\n")
     times.write(str(time.time() - start)+"\n")
 
+print("Time taken to excute All Tests = "+str(time.time() - startAllTests))
 results.close()
 times.close()
