@@ -115,18 +115,18 @@ def hingeOptim(edgeImg,directions):
         histIdx.append(histIdx[i]+lookforward[i])
        # print(histIdx[i])
     white_pixels=np.argwhere(edgeImg)
-    for j in range (0,len(white_pixels)):
+    for j in range (0,len(white_pixels),20):
         for i in range (0,2*directions-3):               
             nextX = white_pixels[j][1]+deltaX(i,directions)
             nextY = white_pixels[j][0]+deltaY(i,directions)
             if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
                         if edgeImg[nextY,nextX]:
-                            for j in range (0,lookforward[i]):
-                                nextX = white_pixels[j][1]+deltaX(i+2+j,directions)
-                                nextY = white_pixels[j][0]+deltaY(i+2+j,directions)
+                            for k in range (0,lookforward[i]):
+                                nextX = white_pixels[j][1]+deltaX(i+2+k,directions)
+                                nextY = white_pixels[j][0]+deltaY(i+2+k,directions)
                                 if (nextX >= 0) and (nextX < width) and (nextY >= 0) and (nextY < height):
                                     if edgeImg[nextY,nextX]:
-                                         hist[histIdx[i]+j] += 1
+                                         hist[histIdx[i]+k] += 1
                                          nb+=1
                         
                    
@@ -193,14 +193,14 @@ def edgeDirection(edgeImg,directions):
 def getFeatureVectorProcess(image,featureVectors,directions,index):
     edgeImg = getEdges(image)
     featureVectors[index]=edgeDirectionOptim(edgeImg,directions) 
-    
+    #featureVectors[index]+=hingeOptim(edgeImg,directions)  # Heba 
 
     
 def getFeatureVector(image):
     # TODO: Write our method for extracting the feature vector.
     featureVector=[]
     edgeImg = getEdges(image)
-    #featureVector+=hingeOptim(edgeImg,12)  # Heba 
+    #featureVector+=hingeOptim(edgeImg,8)  # Heba 
     featureVector+=edgeDirectionOptim(edgeImg,8)   # Heba
     return featureVector
 

@@ -1,5 +1,6 @@
 from features.CO3 import co3 as co3
 import features.EdgeHinge as edgeHinge
+import features.Lbp as lbp
 import features.ContorBasedOrientation as contorBasedOrientation
 import features.PolygonApproximation as polygonApproximation
 import features.HorizontalScan as horizontalScan
@@ -19,6 +20,8 @@ def extractFeatures(method,trainingDataImages,trainingDataImagesGray):
         return horizontalScan.getFeatureVectors(trainingDataImages)
     elif method=="sift":
         return sift.getFeatureVectors(trainingDataImagesGray)
+    elif method=="lbp":
+        return lbp.getFeatureVectors(trainingDataImagesGray)
 
 # Extract the features for one writer during identification phase.
 def extractFeaturesDuringIdentification(method,writerImage,writerImageGray,classifiedCO3=[],classifiedSift=[]):
@@ -26,6 +29,8 @@ def extractFeaturesDuringIdentification(method,writerImage,writerImageGray,class
         return co3.getFeatureVector(classifiedCO3,[],False,writerImage)
     elif method=="sift":
         return sift.getFeatureVector(classifiedSift,[],False,writerImageGray)
+    elif method=="lbp":
+        return lbp.getFeatureVector(writerImageGray)
     elif method=="edgeHinge":
         return edgeHinge.getFeatureVector(writerImage)
     elif method=="contorBasedOrientation":

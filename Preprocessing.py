@@ -4,7 +4,10 @@ import cv2
 
 def processImage(image,typeRequired=""):
     if typeRequired=="gray":
-        return image#[740:2950,350:2400]
+        value = (5, 5)
+        blurred = cv2.GaussianBlur(image, value, 0)
+        erosion=cv2.erode(blurred,value,iterations=2)
+        return erosion#[740:2950,350:2400]
        #return image[900:3400,0:2460]  # LLtslem
     value = (5, 5)
     blurred = cv2.GaussianBlur(image, value, 0)

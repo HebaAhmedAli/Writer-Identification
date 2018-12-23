@@ -36,7 +36,10 @@ for i in range(len(directories)):
                     
     # Printing the time taken.
     print("Time taken to excute the code = "+str(time.time() - start))
-    results.write(str(writerId[0])+"\n")
+    if constants.identification=="svm":
+        results.write(str(writerId[0])+"\n")
+    else:
+        results.write(str(writerId)+"\n")
     times.write(str(time.time() - start)+"\n")
 
 print("Time taken to excute All Tests = "+str(time.time() - startAllTests))

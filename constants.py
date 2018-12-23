@@ -4,9 +4,8 @@ writersIdSize=4
 k=3
 dontSplit=False
 continueTrainning=False
-identification="svm"  # Change to knn to use the knnIdentification.
-methods=["edgeHinge"] #"co3","edgeHinge","contorBasedOrientation","sift"
+identification="knn"  # Change to knn to use the knnIdentification.
+methods=["lbp"] # "co3","edgeHinge","contorBasedOrientation","sift","lbp"
 extension=".jpg"
 siftOrserf="surf" # "sift","surf"
 clusteringMethod="kmean" # "kohenent","kmean"
-
