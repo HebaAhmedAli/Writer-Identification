@@ -1,19 +1,19 @@
 from scipy.interpolate import splprep, splev
+from multiprocessing import Process,Manager,Pool
 from matplotlib import pyplot as plt
 import Preprocessing as preprocessing
 import constants
 import numpy as np
 import random
 import time
-from multiprocessing import Process,Manager,Pool
 
 class co3:
     
-    co3Size=50 # 80
+    co3Size=50    
     contorSize=40
-    epochs=100 # 200
-    radiousS=co3Size # Not sure
-    radiousE=0 # 
+    epochs=100      
+    radiousS=co3Size 
+    radiousE=0 
     learningRateS=0.9
     learningRateE=0.015
     s=5 # Stepness factor.
@@ -22,23 +22,14 @@ class co3:
   
 
     def getFeatureVector(classifiedCO3,imageCO3,training=True,image=None):
-        # TO DO: Write our method for extracting the feature vector.
         if training==False:
             imageCO3=co3.extractTheCO3(image)
         featureVector=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
         return featureVector
-    
-    def getFeatureVectorProcessPool(featureVectors,classifiedCO3,imageCO3,index):
-        pool = Pool(processes=20)   # start 10 worker processes
-        featureVector = pool.apply_async(co3.matchTheCO3ToCalcPDF, (classifiedCO3,imageCO3))      # runs in *only* one process
-        #new section
-        pool.close()
-        pool.join()  
-        featureVectors[index]=featureVector.get()
         
     
     def getFeatureVectorProcess(featureVectors,classifiedCO3,imageCO3,index):
-        #featureVectors[index]=co3.matchTheCO3ToCalcPDFProcess(classifiedCO3,imageCO3)
+        #featureVectors[index]=co3.matchTheCO3ToCalcPDF(classifiedCO3,imageCO3)
          featureVector=co3.manager.list([0 for i in range(co3.co3Size)])
          steps=int(np.ceil(len(imageCO3)/co3.processesNo))
          processes = [Process(target=co3.matchTheCO3ToCalcPDFProcess,args= (classifiedCO3,imageCO3[i*steps:min(i*steps+steps,len(imageCO3))],featureVector)) for i in range(co3.processesNo)]
@@ -56,7 +47,7 @@ class co3:
         imagePDF=[0 for i in range(co3.co3Size)] 
         for i in range(len(allCO3)):
             co3MinIndex=co3.getTheIndexOfMinContorDiff(classifiedCO3,allCO3[i])
-            imagePDF[co3MinIndex]+=(1/len(allCO3)) # TODO: Be sure from the devision.
+            imagePDF[co3MinIndex]+=(1/len(allCO3)) 
         return imagePDF
 
     def matchTheCO3ToCalcPDFProcess(classifiedCO3,allCO3,imagePDF):
@@ -64,22 +55,9 @@ class co3:
             return []
         for i in range(len(allCO3)):
             co3MinIndex=co3.getTheIndexOfMinContorDiff(classifiedCO3,allCO3[i])
-            imagePDF[co3MinIndex]+=(1/len(allCO3)) # TODO: Be sure from the devision.
+            imagePDF[co3MinIndex]+=(1/len(allCO3))
         return   
     
-    def matchTheCO3ToCalcPDFPool(classifiedCO3,allCO3):
-        if len(allCO3) == 0:
-            return []
-        imagePDF=[0 for i in range(co3.co3Size)] 
-        for i in range(len(allCO3)):
-            pool = Pool(processes=10)   # start 10 worker processes
-            co3MinIndex = pool.apply_async(co3.getTheIndexOfMinContorDiff, (classifiedCO3,allCO3[i]))      # runs in *only* one process
-            #new section
-            pool.close()
-            pool.join()    
-            imagePDF[co3MinIndex.get()]+=(1/len(allCO3)) # TODO: Be sure from the devision.
-        return imagePDF
-        
     
     def extractTheCO3(image):
         _,contors=preprocessing.segmentCharactersUsingProjection(image,"co3",True) 
@@ -136,15 +114,12 @@ class co3:
            difference=[tuple(np.subtract(randomInput[j],classifiedCO3[i][j])) for j in range(len(randomInput))]
            classifiedCO3[i]=[tuple(np.add(classifiedCO3[i][j],(rate*alpha[i]*difference[j][0],rate*alpha[i]*difference[j][1]))) for j in range(len(difference))]
     
-    # TODO: Remove trainingDataImages.
     def getFeatureVectors(trainingDataImages):
         start = time.time()
         classifiedCO3,imagesCO3=co3.classifyTheCO3UsingKohenenMap(trainingDataImages)
         print("Time taken to excute the kohenent = "+str(time.time() - start))
-        # Initialize the vectors of each image with empty vector.
         start2 = time.time()
-        #featureVectors=[[] for i in range(len(trainingDataImages))] 
-    
+        # Initialize the vectors of each image with empty vector.    
         featureVectors=co3.manager.list([[] for i in range(len(trainingDataImages))])
         processes = [co3.createProcess(classifiedCO3,imagesCO3[i],i,featureVectors) for i in range(len(trainingDataImages))]
         for p in processes:
@@ -155,12 +130,6 @@ class co3:
             p[0].terminate()
         featureVectorsTemp=featureVectors
         del featureVectors
-        '''
-        for i in range(len(trainingDataImages)):
-            start = time.time()
-            featureVectors[i]=co3.getFeatureVector(classifiedCO3,imagesCO3[i])
-            print("Time taken to excute the getFeatureVector = "+str(time.time() - start))
-        '''
         print("Time taken to excute the featureVectors loop = "+str(time.time() - start2))
         return classifiedCO3,featureVectorsTemp
     
@@ -170,13 +139,7 @@ class co3:
         process = Process(target=co3.getFeatureVectorProcess, args=(featureVectors,classifiedCO3,imageCO3,index))
         return (process ,index)
 
-    # TODO: Delete after testing.
-    def show(image):
-        # Figure size in inches
-        plt.figure(figsize=(10, 10))
-        # Display an image on the axes, with nearest neighbour interpolation
-        plt.imshow(image, interpolation='nearest')
-
+ 
     def getTheIndexOfMinContorDiff(allContors,contor):
         minIndex=-1
         minDist=10000000
@@ -186,6 +149,7 @@ class co3:
                 minDist=totalDist
                 minIndex=i
         return minIndex
+    
     def getResampledContors(allContorsNormalized,contorRequiredSize):
         resampledContors=[]
         for i in range(len(allContorsNormalized)):
@@ -204,13 +168,6 @@ class co3:
          xNew, yNew = splev(uNew, tck, der=0)
          newContor=[(xNew[i],yNew[i]) for i in range(len(xNew))]
          newContor=sorted(newContor,key=lambda x: (x[0], x[1]))
-         # TODO: Delete after test.
-         """
-         plt.plot(x, y, 'ro')
-         plt.plot(xNew, yNew, 'b--')
-         plt.show()
-         """
-         #########################.
          return newContor
      
     def selectAndSampleContor(contor,contorRequiredSize):
@@ -221,24 +178,3 @@ class co3:
         newContor=sorted(newContor,key=lambda x: (x[0], x[1]))
         return newContor
     
-    def printWeights(classifiedCO3):
-       if len(classifiedCO3)==0:
-           return
-       file=open("weights.txt","w")
-       for i in range(co3.co3Size):
-           file.write("#"+str(i)+"\n")
-           for j in range(co3.contorSize):
-               file.write(str(classifiedCO3[i][j][0])+" "+str(classifiedCO3[i][j][1])+"\n")
-       file.close()
-       
-    def readWeights():
-        classifiedCO3=[[] for i in range(co3.co3Size)]
-        with open("weights.txt", "r") as file:
-            i=-1
-            for line in file:
-                if line[0]=='#':  
-                    i+=1
-                else:
-                    data=line.split()
-                    classifiedCO3[i].append((float(data[0]),float(data[1])))
-        return classifiedCO3

@@ -1,9 +1,7 @@
 import FeatureExtraction as featureExtraction
-import Preprocessing as preprocessing
 from matplotlib import pyplot as plt
 import numpy as np
 import constants
-import cv2
 
 # TODO: Delete after testing.
 def show(image):
@@ -24,19 +22,6 @@ def getNormalizedDist(featureVector,featureVectorToCompare):
         
     return totalDist/len(featureVector)
 
-# Read the given images of the writer we want to identify. note imagesNum should always=1
-def readWriterImages(imagesNum=1):
-    writerImages=[]
-    x=1
-    writerImages=[]
-    for i in range(imagesNum):
-       image= cv2.imread('writerImagesToIdentify/'+str(x)+'.jpg')
-       processedImage=preprocessing.processImage(image)
-       x=x+1
-       writerImages.append(processedImage);
-       #show(processedImage)
-    return writerImages
-    
 def identifyWriter(methods,featureVectors,tariningDataWriters,writerImage,writerImageGray,classifiedCO3=[],classifiedSift=[]):
     featureVector=featureExtraction.extractAndConcatinateFeauturesDuringIdentification(methods,writerImage,writerImageGray,classifiedCO3,classifiedSift)
     distsArr=[]
@@ -64,5 +49,4 @@ def vote(distsArr):
         if votingArrDists[indices[i]] < minDist:
             minDist=votingArrDists[indices[i]]
             nearestIndex=indices[i]
-    #print(votingArr,votingArrDists)
     return nearestIndex

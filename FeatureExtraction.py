@@ -1,10 +1,9 @@
-from features.CO3 import co3 as co3
-import features.EdgeHinge as edgeHinge
-import features.Lbp as lbp
 import features.ContorBasedOrientation as contorBasedOrientation
 import features.PolygonApproximation as polygonApproximation
-import features.HorizontalScan as horizontalScan
 from features.Sift import sift as sift
+import features.EdgeHinge as edgeHinge
+from features.CO3 import co3 as co3
+import features.Lbp as lbp
 
 # Extract the features for all writers during training or testing phase.
 def extractFeatures(method,trainingDataImages,trainingDataImagesGray):
@@ -16,8 +15,6 @@ def extractFeatures(method,trainingDataImages,trainingDataImagesGray):
         return contorBasedOrientation.getFeatureVectors(trainingDataImages)
     elif method=="polygonApproximation":
         return polygonApproximation.getFeatureVectors(trainingDataImages)
-    elif method=="horizontalScan":
-        return horizontalScan.getFeatureVectors(trainingDataImages)
     elif method=="sift":
         return sift.getFeatureVectors(trainingDataImagesGray)
     elif method=="lbp":
@@ -37,8 +34,6 @@ def extractFeaturesDuringIdentification(method,writerImage,writerImageGray,class
         return contorBasedOrientation.getFeatureVector(writerImage)
     elif method=="polygonApproximation":
         return polygonApproximation.getFeatureVector(writerImage)
-    elif method=="horizontalScan":
-        return horizontalScan.getFeatureVector(writerImage)
     
 def extractAndConcatinateFeautures(methods,trainingDataImages,trainingDataImagesGray):
     methodsFeatureVectors=[]

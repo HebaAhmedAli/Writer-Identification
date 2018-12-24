@@ -1,33 +1,28 @@
-from scipy.interpolate import splprep, splev
-from matplotlib import pyplot as plt
+from multiprocessing import Process,Manager,Pool
 import numpy as np
 import constants
 import random
 import time
-from multiprocessing import Process,Manager,Pool
 import cv2
 
 class sift:
     
-    siftSize=50   # no of clusters
+    siftSize=50     # no of clusters
     siftLimit=2000     
     surfLimit=1000  # no of interest points in each image
                     # we will need to classify siftSize * no of images
     vetorSize=128
     epochs=100 # 200
-    radiousS=siftSize # Not sure
-    radiousE=0 # 
+    radiousS=siftSize
+    radiousE=0 
     learningRateS=0.9
     learningRateE=0.015
     s=5 # Stepness factor.
-    
     manager=Manager()
     processesNo=5;
   
    
-
     def getFeatureVector(classifiedSift,imageSift,training=True,image=None):
-        # TO DO: Write our method for extracting the feature vector.
         if training==False:
             imageSift=sift.extractTheSift(image)
         featureVector=sift.matchTheSiftToCalcPDF(classifiedSift,imageSift)
@@ -35,28 +30,8 @@ class sift:
     
     def getFeatureVectorProcess(featureVectors,classifiedSift,imageSift,index):
         featureVectors[index]=sift.matchTheSiftToCalcPDF(classifiedSift,imageSift)
-        '''
-         featureVector=sift.manager.list([0 for i in range(sift.siftSize)])
-         steps=int(np.ceil(len(imageSift)/sift.processesNo))
-         processes = [Process(target=sift.matchTheSiftToCalcPDFProcess,args= (classifiedSift,imageSift[i*steps:min(i*steps+steps,len(imageSift))],featureVector)) for i in range(sift.processesNo)]
-         for p in processes:
-             p.start()
-         for p in processes:
-             p.join()
-             p.terminate()   
-         featureVectors[index]=featureVector
-         del featureVector
-         '''
-    
-    def matchTheSiftToCalcPDFProcess(classifiedSift,allSift,imagePDF):
-        if len(allSift) == 0:
-            return []
-        for i in range(len(allSift)):
-            siftMinIndex=sift.getTheIndexOfMinVectorDiff(classifiedSift,allSift[i])
-            imagePDF[siftMinIndex]+=(1/len(allSift)) # TODO: Be sure from the devision.
-        return 
-    
-    
+      
+            
     def matchTheSiftToCalcPDF(classifiedSift,allSift):
         if len(allSift) == 0:
             return []
@@ -79,6 +54,7 @@ class sift:
             kps,imageSift = surf.detectAndCompute(image,None)
         return imageSift
     
+    
     def extractTheSiftAllImages(trainingDataImages):
         allSift=[]
         imagesSift=[[] for i in range(len(trainingDataImages))]
@@ -94,7 +70,6 @@ class sift:
         start=time.time()
         allSift,imagesSift=sift.extractTheSiftAllImages(trainingDataImages)
         print("len of allSift "+str(len(allSift))+" time "+str(time.time()-start))
-        # TODO: Run the kmean algorithm.
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
         ret,label,center=cv2.kmeans(allSift,sift.siftSize,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
         classifiedSift= center
@@ -141,7 +116,6 @@ class sift:
            difference=[np.subtract(randomInput[j],classifiedSift[i][j]) for j in range(len(randomInput))]
            classifiedSift[i]=[np.add(classifiedSift[i][j],rate*alpha[i]*difference[j]) for j in range(len(difference))]
            
-    # TODO: Remove trainingDataImages.
     def getFeatureVectors(trainingDataImages):
         start = time.time()
         classifiedSift=[]
@@ -152,9 +126,7 @@ class sift:
             classifiedSift,imagesSift=sift.classifyTheSiftUsingKmean(trainingDataImages)
         print("Time taken to excute the kohenent = "+str(time.time() - start))
         # Initialize the vectors of each image with empty vector.
-        start2 = time.time()
-        #featureVectors=[[] for i in range(len(trainingDataImages))] 
-        
+        start2 = time.time()        
         featureVectors=sift.manager.list([[] for i in range(len(trainingDataImages))])
         processes = [sift.createProcess(classifiedSift,imagesSift[i],i,featureVectors) for i in range(len(trainingDataImages))]
         for p in processes:
@@ -165,12 +137,6 @@ class sift:
             p[0].terminate()
         featureVectorsTemp=featureVectors
         del featureVectors
-        '''
-        for i in range(len(trainingDataImages)):
-            start = time.time()
-            featureVectors[i]=sift.getFeatureVector(classifiedSift,imagesSift[i])
-            print("Time taken to excute the getFeatureVector = "+str(time.time() - start))
-        '''
         print("Time taken to excute the featureVectors loop = "+str(time.time() - start2))
         return classifiedSift,featureVectorsTemp
         

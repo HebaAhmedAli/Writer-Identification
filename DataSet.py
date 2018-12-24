@@ -5,26 +5,13 @@ import cv2
 import os
 
 class dataSet:
-    # Contains all the processed training images.
+    # Contains all the processed binary training images.
     trainingDataImages=[]
+    # Contains all the processed gray training images.
     trainingDataImagesGray=[]
     # Contains all the corresponding training writers.
     tariningDataWriters=[1,1,2,2,3,3]
-    # Contains all the processed testing images.
-    #testingDataImages=[]
-    # Contains all the corresponding testing writers.
-    #testingDataWriters=[]
-    # The index coressponding to writer id 
-    # and contains all the processed images writen by this writer in the training data.
-    #writersWithCorrespondingImagesTraining=[[] for i in range(constants.writersIdSize)] 
-    # The index coressponding to writer id 
-    # and contains all the processed images writen by this writer in the testing data.
-    #writersWithCorrespondingImagesTesting=[[] for i in range(constants.writersIdSize)] 
-    
-    # The index coressponding to writer id 
-    # and contains all the processed images writen by this writer in all data to be used while reading.
-    #writersWithCorrespondingImages=[[] for i in range(constants.writersIdSize)] 
-    
+
       
     def loadDataset(file_name):
         dataSet.trainingDataImages.clear()
@@ -33,56 +20,39 @@ class dataSet:
         image= cv2.imread('data/'+file_name+'/1/1'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
         processedImageGray=preprocessing.processImage(image,"gray")
-        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
         dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/1/2'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
         processedImageGray=preprocessing.processImage(image,"gray")
-        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
         dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/2/1'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
         processedImageGray=preprocessing.processImage(image,"gray")
-        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
         dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/2/2'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
         processedImageGray=preprocessing.processImage(image,"gray")
-        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
         dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/3/1'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
         processedImageGray=preprocessing.processImage(image,"gray")
-        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
         dataSet.trainingDataImagesGray.append(processedImageGray)
         image= cv2.imread('data/'+file_name+'/3/2'+constants.extension,0)
         processedImage=preprocessing.processImage(image)
         processedImageGray=preprocessing.processImage(image,"gray")
-        #cv2.imwrite("img_cropped1.jpg", processedImage)
         dataSet.trainingDataImages.append(processedImage)
         dataSet.trainingDataImagesGray.append(processedImageGray)
         return  
  
     
-        
-    # TODO: Delete after testing.
-    def show(image):
-        # Figure size in inches
-        plt.figure(figsize=(10, 10))
-        # Display an image on the axes, with nearest neighbour interpolation
-        plt.imshow(image, interpolation='nearest',cmap="gray")
-        return
-    
     def readTestNumbers(path):
         _,directories,_=next(os.walk(path))
-        #directories=sorted(directories)
         directories.sort(key=int)
-        #print(directories)
         return directories
     
     def readWriterImage(file_name):
