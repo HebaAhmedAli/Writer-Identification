@@ -23,7 +23,7 @@ for i in range(len(directories)):
         # Extract the featureVectors for all the writers may need additional preprocessing inside.
         classifiedCO3,classifiedSift,featureVectors=featureExtraction.extractAndConcatinateFeautures(constants.methods,dataSet.trainingDataImages,dataSet.trainingDataImagesGray)
         print("Time taken to extractFeatures = "+str(time.time() - sartExtractFeatures))
-             
+            
         # Identify any writer.
         writerId=-1
         sartIdentifyWriter=time.time()
@@ -47,6 +47,7 @@ for i in range(len(directories)):
         print("Catch exception")
         results.write(str(random.randint(1,3))+"\n")
         times.write(str(round(1.21))+"\n")
+    
 
 print("Time taken to excute All Tests = "+str(time.time() - startAllTests))
 results.close()

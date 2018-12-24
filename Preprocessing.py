@@ -1,4 +1,3 @@
-from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 
@@ -7,13 +6,13 @@ def processImage(image,typeRequired=""):
         value = (5, 5)
         blurred = cv2.GaussianBlur(image, value, 0)
         erosion=cv2.erode(blurred,value,iterations=2)
-        return erosion#[740:2950,350:2400]
-       #return image[900:3400,0:2460]  # LLtslem
+        #return erosion#[740:2950,350:2400]
+        return erosion[900:3400,0:2460]  # LLtslem
     value = (5, 5)
     blurred = cv2.GaussianBlur(image, value, 0)
     _,binarized= cv2.threshold(blurred,175,255,cv2.THRESH_BINARY)
-    croppedBinarized=binarized#[740:2950,350:2400] # TODO: To change these values.
-    #croppedBinarized=binarized[900:3400,0:2460] # TODO: LLtslem.
+    #croppedBinarized=binarized#[740:2950,350:2400] # TODO: To change these values.
+    croppedBinarized=binarized[900:3400,0:2460] # TODO: LLtslem.
     return croppedBinarized
 
 # It returns all the contors in the cropped images after splitting.
@@ -49,6 +48,16 @@ def getVerticalBlackHistogram(processedImg):
     vertiaclHist = np.sum(processedImg,axis=0).tolist()
     return vertiaclHist
 
+def getHorizontalBlackHistogramGray(processedImg):
+    processedImg=(processedImg<175)
+    horizontalHist = np.sum(processedImg,axis=1).tolist()
+    return horizontalHist
+
+def getVerticalBlackHistogramGray(processedImg):
+    processedImg=(processedImg<175)
+    vertiaclHistHist = np.sum(processedImg,axis=0).tolist()
+    return vertiaclHistHist
+
 def getHorizontalImageLines(processedImg,minHight):
     horizontalImageLines=[]
     horizontalHist=getHorizontalBlackHistogram(processedImg)
@@ -63,6 +72,46 @@ def getHorizontalImageLines(processedImg,minHight):
                 continue
             horizontalImageLines.append(processedImg[start:end,0:processedImg.shape[1]])
     return horizontalImageLines
+
+def getHorizontalImageLinesGray(processedImg,minHight,thresh=25):
+    horizontalImageLines=[]
+    #_,binarized= cv2.threshold(processedImg,175,255,cv2.THRESH_BINARY)
+    horizontalHist=getHorizontalBlackHistogramGray(processedImg)
+    start=0
+    end=0
+    for i in range(len(horizontalHist)):
+        if horizontalHist[i]<thresh and i+1 < len(horizontalHist) and horizontalHist[i+1]>thresh:
+            start=i+1
+        elif horizontalHist[i]>thresh and i+1 < len(horizontalHist) and horizontalHist[i+1]<thresh:
+            end=i+1
+            if end-start < minHight:
+                continue
+            horizontalImageLines.append(processedImg[start:end,0:processedImg.shape[1]])
+    return horizontalImageLines
+
+def cropMargins(newImage,thresh=10):
+    verticalHist=getVerticalBlackHistogramGray(newImage)
+    start=0
+    end=newImage.shape[1]
+    for i in range(len(verticalHist)):
+        if verticalHist[i]<thresh and i+1 < len(verticalHist) and verticalHist[i+1]>thresh:
+            start=i+1
+            break
+    for i in range(len(verticalHist)-1,0,-1):
+        if verticalHist[i]<thresh and i-1 >0  and verticalHist[i-1]>thresh:
+            end=i-1
+            break
+    return newImage[0:newImage.shape[0],start:end]
+    
+    
+def concatinateLines(imageLines):
+    if len(imageLines)==0:
+        return imageLines
+    newImage=imageLines[0]
+    for i in range(1,len(imageLines),1):
+        newImage=np.concatenate((newImage,imageLines[i]),axis=0)
+    newImage=cropMargins(newImage)
+    return newImage
 
 # Segment the image and return all the segmented images and all the contors in them.
 def segmentCharactersUsingProjection(processedImg,method,normalizeContors=False,threshOfConnectedPixels=3,minWidth=10,minHight=20,maxWidth=100):
@@ -122,4 +171,5 @@ def getContorsAndDraw(image,method,x,y,allContors,normalizeContors=False,approx=
             approxcnt.append(app)
             appr =[(app[i][0][0],app[i][0][1]) for i in range(len(app))]
             approx.append(appr)
+
        
